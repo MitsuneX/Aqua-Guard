@@ -286,21 +286,24 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
       children: [
         Row(
           children: [
-            Image.asset(
-              'assets/images/aquaguard_logo.png',
-              width: 44,
-              height: 44,
-              fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) => Container(
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                'assets/images/aquaguard_logo.png',
                 width: 44,
                 height: 44,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE0F2FE),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.water_drop,
-                  color: Color(0xFF0284C7),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE0F2FE),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.water_drop,
+                    color: Color(0xFF0284C7),
+                  ),
                 ),
               ),
             ),

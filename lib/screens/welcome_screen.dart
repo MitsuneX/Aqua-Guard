@@ -102,7 +102,6 @@ class WelcomeScreen extends StatelessWidget {
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF006296),
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
@@ -112,11 +111,23 @@ class WelcomeScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.water_drop,
-                          color: Colors.white,
-                          size: 24,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(14),
+                        child: Image.asset(
+                          'assets/images/aquaguard_logo.png',
+                          width: 44,
+                          height: 44,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            color: const Color(0xFF006296),
+                            child: const Center(
+                              child: Icon(
+                                Icons.water_drop,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),

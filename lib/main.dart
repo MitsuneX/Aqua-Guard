@@ -346,11 +346,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Row(
           children: [
             // Logo resmi AquaGuard (wave + water drop)
-            Image.asset(
-              'assets/images/aquaguard_logo.png',
-              width: 50,
-              height: 50,
-              fit: BoxFit.contain,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                'assets/images/aquaguard_logo.png',
+                width: 44,
+                height: 44,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE0F2FE),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.water_drop, color: Color(0xFF0284C7)),
+                ),
+              ),
             ),
             const SizedBox(width: 10),
             Column(

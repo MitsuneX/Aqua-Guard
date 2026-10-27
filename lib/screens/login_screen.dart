@@ -221,14 +221,6 @@ class _LoginScreenState extends State<LoginScreen> {
           width: 72,
           height: 72,
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF0284C7),
-                Color(0xFF0369A1),
-              ],
-            ),
             borderRadius: BorderRadius.circular(22),
             boxShadow: [
               BoxShadow(
@@ -238,11 +230,32 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ],
           ),
-          child: const Center(
-            child: Icon(
-              Icons.water_drop,
-              color: Colors.white,
-              size: 38,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(22),
+            child: Image.asset(
+              'assets/images/aquaguard_logo.png',
+              width: 72,
+              height: 72,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF0284C7),
+                      Color(0xFF0369A1),
+                    ],
+                  ),
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.water_drop,
+                    color: Colors.white,
+                    size: 38,
+                  ),
+                ),
+              ),
             ),
           ),
         ),
