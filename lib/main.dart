@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'screens/aksi_screen.dart';
 import 'screens/edukasi_screen.dart';
 import 'screens/tracker_screen.dart';
-import 'screens/login_screen.dart';
 import 'screens/welcome_screen.dart';
+import 'screens/profile_screen.dart';
 
 void main() {
   runApp(const AquaGuardApp());
@@ -402,7 +402,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(width: 10),
             // Tombol Avatar Profil
             GestureDetector(
-              onTap: () => _showProfileSheet(context),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
+              ),
               child: Container(
                 width: 40,
                 height: 40,
@@ -422,96 +425,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
       ],
-    );
-  }
-
-  void _showProfileSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE2E8F0),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                const SizedBox(height: 18),
-                Row(
-                  children: [
-                    Container(
-                      width: 52,
-                      height: 52,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF0F3B5F),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Center(
-                        child: Icon(Icons.person, color: Colors.white, size: 28),
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Farhan Ramadhan',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF0F172A),
-                          ),
-                        ),
-                        SizedBox(height: 2),
-                        Text(
-                          'farhan@aquaguard.id',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Color(0xFF64748B),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                const Divider(color: Color(0xFFF1F5F9)),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.logout_rounded, color: Color(0xFFEF4444)),
-                  title: const Text(
-                    'Keluar ke Halaman Login',
-                    style: TextStyle(
-                      color: Color(0xFFEF4444),
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14.5,
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
-                      (route) => false,
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 

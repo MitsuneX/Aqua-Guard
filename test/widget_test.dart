@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:aquaguard/main.dart';
 import 'package:aquaguard/screens/login_screen.dart';
+import 'package:aquaguard/screens/profile_screen.dart';
 
 void main() {
   testWidgets('AquaGuard Kalkulator & Tracker Air Screen Smoke Test',
@@ -287,5 +288,61 @@ void main() {
     await tester.tap(find.text('Daftar ke AquaGuard'));
     await tester.pumpAndSettle();
     expect(find.text('Status Kuota Air Hari Ini'), findsOneWidget);
+  });
+
+  testWidgets('AquaGuard Profil Pengguna Screen Smoke Test',
+      (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    // Build AquaGuardApp with ProfileScreen directly
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: ProfileScreen(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Verify Title & Identity
+    expect(find.text('Profil Pengguna'), findsOneWidget);
+    expect(find.text('Farhan Pratama'), findsOneWidget);
+    expect(find.text('farhan@aquaguard.id'), findsOneWidget);
+    expect(find.text('Duta SDG 6 Kampus'), findsOneWidget);
+    expect(find.text('Level 3: Penjaga Mata Air'), findsOneWidget);
+
+    // Verify Conservation Summary Section
+    expect(find.text('Ringkasan Konservasi Air'), findsOneWidget);
+    expect(find.text('Total Dihemat'), findsOneWidget);
+    expect(find.text('1.420'), findsOneWidget);
+    expect(find.text('Rata-rata Harian'), findsOneWidget);
+    expect(find.text('42'), findsOneWidget);
+    expect(find.text('Streak Berturut'), findsOneWidget);
+    expect(find.text('12'), findsOneWidget);
+    expect(find.text('Jejak Air'), findsOneWidget);
+    expect(find.text('Efisien'), findsOneWidget);
+
+    // Verify Points & Badges
+    expect(find.text('Poin & Lencana SDG 6'), findsOneWidget);
+    expect(find.text('850 Eco-Points'), findsOneWidget);
+    expect(find.text('Menuju Master Konservasi'), findsOneWidget);
+    expect(find.text('850 / 1.000 Poin'), findsOneWidget);
+
+    // Verify Settings
+    expect(find.text('Pengaturan Aplikasi'), findsOneWidget);
+    expect(find.text('Pengingat Catat Air'), findsOneWidget);
+    expect(find.text('Misi Komunitas SDG 6'), findsOneWidget);
+    expect(find.text('Mode Hemat Kuota'), findsOneWidget);
+    expect(find.text('Satuan Pengukuran'), findsOneWidget);
+    expect(find.text('Liter (L)'), findsOneWidget);
+    expect(find.text('Galon (Gal)'), findsOneWidget);
+    expect(find.text('Bahasa Aplikasi'), findsOneWidget);
+    expect(find.text('Indonesia'), findsOneWidget);
+
+    // Verify About section & Logout button
+    await tester.ensureVisible(find.text('Keluar Sesi Demo'));
+    await tester.pumpAndSettle();
+    expect(find.text('Tentang AquaGuard v1.4'), findsOneWidget);
+    expect(find.text('Keluar Sesi Demo'), findsOneWidget);
   });
 }

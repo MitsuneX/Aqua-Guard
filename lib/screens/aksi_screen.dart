@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'profile_screen.dart';
 
 /// Model data representasi satu item checklist aksi kebiasaan air.
 class ActionItemModel {
@@ -697,18 +698,24 @@ class _AksiKebiasaanAirScreenState extends State<AksiKebiasaanAirScreen> {
             ),
             const SizedBox(width: 10),
             // Tombol Avatar Profil
-            Container(
-              width: 40,
-              height: 40,
-              decoration: const BoxDecoration(
-                color: Color(0xFF0F3B5F),
-                shape: BoxShape.circle,
+            GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
               ),
-              child: const Center(
-                child: Icon(
-                  Icons.person,
-                  color: Colors.white,
-                  size: 22,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF0F3B5F),
+                  shape: BoxShape.circle,
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: 22,
+                  ),
                 ),
               ),
             ),

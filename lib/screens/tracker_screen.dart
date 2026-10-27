@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'profile_screen.dart';
 
 /// Halaman Mandiri "Kalkulator & Tracker Air" (Tab Tracker) - AquaGuard
 /// Pure Mobile UI & Local State dengan StatefulWidget berbasis SDG 6.4.
@@ -491,18 +492,24 @@ class _KalkulatorTrackerAirScreenState
               ),
             ),
             const SizedBox(width: 10),
-            Container(
-              width: 40,
-              height: 40,
-              decoration: const BoxDecoration(
-                color: Color(0xFF0F3B5F),
-                shape: BoxShape.circle,
+            GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
               ),
-              child: const Center(
-                child: Icon(
-                  Icons.person,
-                  color: Colors.white,
-                  size: 22,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF0F3B5F),
+                  shape: BoxShape.circle,
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: 22,
+                  ),
                 ),
               ),
             ),

@@ -62,9 +62,10 @@ Mobile Front End (New)/
 │       ├── login_screen.dart   # Halaman Login & Registrasi (client-side auth & guest demo)
 │       ├── tracker_screen.dart # Tab 1: Kalkulator & Tracker Air (activity steppers, budget formulas)
 │       ├── aksi_screen.dart    # Tab 2: Aksi & Kebiasaan Air (checklist models, category filters)
-│       └── edukasi_screen.dart # Tab 3: Edukasi & Target SDG 6 (modules, quizzes, XP tracker)
+│       ├── edukasi_screen.dart # Tab 3: Edukasi & Target SDG 6 (modules, quizzes, XP tracker)
+│       └── profile_screen.dart # Profil Pengguna, Statistik SDG 6 & Pengaturan Aplikasi
 ├── test/
-│   └── widget_test.dart       # Widget smoke tests
+│   └── widget_test.dart       # Comprehensive widget smoke tests
 └── pubspec.yaml               # Flutter package configuration and registered assets
 ```
 
@@ -80,13 +81,19 @@ graph TD
     B -->|Tab Index 1| D[KalkulatorTrackerAirScreen]
     B -->|Tab Index 2| E[AksiKebiasaanAirScreen]
     B -->|Tab Index 3| F[EdukasiSdgScreen]
-    C -->|Profil / Keluar| L
+    
+    C -->|Avatar Tap| P[ProfileScreen]
+    D -->|Avatar Tap| P
+    E -->|Avatar Tap| P
+    F -->|Avatar Tap| P
+    P -->|Keluar Sesi Demo| L
     L -->|Kembali| W
 
     C -->|Quick Nav| B
     D -->|Real-Time Recalculations| D1[Activity Liter Calculations & Progress Bars]
     E -->|Toggle Item| E1[Dynamic Liter & Point Accumulation]
     F -->|Answer Quiz| F1[XP Reward & Answer Validation]
+    P -->|Edit Profil / Ganti Satuan| P1[Stateful Conservation Summary & Settings]
 ```
 
 1. **🧭 Root Navigation (`AquaGuardMainScaffold`):**
@@ -104,6 +111,12 @@ graph TD
 4. **📚 Edukasi & SDG Module (`edukasi_screen.dart`):**
    - Displays micro-modules mapped to SDG 6 targets.
    - Manages quiz interaction states (unanswered, correct answer, feedback dialog) and dynamically increments user XP scores.
+
+5. **👤 Profil Pengguna & Pengaturan Module (`profile_screen.dart`):**
+   - Menampilkan kartu identitas relawan lengkap dengan lencana terverifikasi, peran Duta SDG 6, dan peringkat relawan yang dapat diedit langsung.
+   - 4 Kartu Metrik Ringkasan Konservasi Air: Total Dihemat (+14% dari target), Rata-rata Harian (42 L/hari vs 35 L target), Streak Berturut (12 hari), dan Jejak Air (Kategori Efisien - Eco Hero).
+   - Kartu Poin & Lencana SDG 6 (850 Eco-Points, bilah progres interaktif 85%, dan carousel lencana).
+   - Pengaturan interaktif dengan sakelar Pengingat Catat Air, Misi Komunitas, Mode Hemat Kuota, toggle segmented satuan (Liter vs Galon), pilihan bahasa, serta tombol konfirmasi Keluar Sesi Demo.
 
 ---
 
