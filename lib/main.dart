@@ -5,6 +5,7 @@ import 'screens/aksi_screen.dart';
 import 'screens/edukasi_screen.dart';
 import 'screens/tracker_screen.dart';
 import 'screens/login_screen.dart';
+import 'screens/welcome_screen.dart';
 
 void main() {
   runApp(const AquaGuardApp());
@@ -28,8 +29,8 @@ class AquaGuardApp extends StatelessWidget {
           primary: const Color(0xFF0284C7),
         ),
       ),
-      // Layar awal autentikasi (Login / Sign Up) sesuai alur AquaGuard
-      home: homeScreen ?? const LoginScreen(),
+      // Layar awal aplikasi: WelcomeScreen sesuai alur onboarding AquaGuard
+      home: homeScreen ?? const WelcomeScreen(),
     );
   }
 }

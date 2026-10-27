@@ -28,9 +28,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: 'Farhan Ramadhan');
-    _emailController = TextEditingController(text: 'farhan@aquaguard.id');
-    _passwordController = TextEditingController(text: 'password123');
+    _nameController = TextEditingController(text: 'Enter Your Name');
+    _emailController = TextEditingController(text: 'name@aquaguard.id');
+    _passwordController = TextEditingController(text: 'Enter Your Password');
   }
 
   @override
@@ -146,6 +146,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // Tombol Kembali jika dibuka dari WelcomeScreen
+                    if (Navigator.canPop(context)) ...[
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF0F172A)),
+                          onPressed: () => Navigator.pop(context),
+                          tooltip: 'Kembali ke Halaman Awal',
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+
                     // 1. Logo & Identitas AquaGuard
                     _buildHeaderLogo(),
 
