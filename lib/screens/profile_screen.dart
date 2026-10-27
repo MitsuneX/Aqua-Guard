@@ -19,8 +19,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _unit = 'Liter (L)'; // 'Liter (L)' atau 'Galon (Gal)'
 
   // State Profil
-  String _userName = 'Farhan Pratama';
-  final String _userEmail = 'farhan@aquaguard.id';
+  String _userName = 'Nama Kamu';
+  final String _userEmail = 'nama@aquaguard.id';
   final String _userRole = 'Duta SDG 6 Kampus';
   final String _userRank = 'Level 3: Penjaga Mata Air';
 

@@ -306,8 +306,8 @@ void main() {
 
     // Verify Title & Identity
     expect(find.text('Profil Pengguna'), findsOneWidget);
-    expect(find.text('Farhan Pratama'), findsOneWidget);
-    expect(find.text('farhan@aquaguard.id'), findsOneWidget);
+    expect(find.text('Nama Kamu'), findsOneWidget);
+    expect(find.text('nama@aquaguard.id'), findsOneWidget);
     expect(find.text('Duta SDG 6 Kampus'), findsOneWidget);
     expect(find.text('Level 3: Penjaga Mata Air'), findsOneWidget);
 
