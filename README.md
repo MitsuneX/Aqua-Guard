@@ -58,6 +58,7 @@ Mobile Front End (New)/
 ├── lib/
 │   ├── main.dart              # Application entrypoint, theme, navigation scaffold, DashboardScreen
 │   └── screens/
+│       ├── login_screen.dart   # Halaman Login & Registrasi (client-side auth & guest demo)
 │       ├── tracker_screen.dart # Tab 1: Kalkulator & Tracker Air (activity steppers, budget formulas)
 │       ├── aksi_screen.dart    # Tab 2: Aksi & Kebiasaan Air (checklist models, category filters)
 │       └── edukasi_screen.dart # Tab 3: Edukasi & Target SDG 6 (modules, quizzes, XP tracker)
@@ -70,11 +71,13 @@ Mobile Front End (New)/
 
 ```mermaid
 graph TD
-    A[main.dart: AquaGuardApp] --> B[AquaGuardMainScaffold]
+    A[main.dart: AquaGuardApp] --> L[LoginScreen]
+    L -->|Masuk / Daftar / Google / Tamu| B[AquaGuardMainScaffold]
     B -->|Tab Index 0| C[DashboardScreen]
     B -->|Tab Index 1| D[KalkulatorTrackerAirScreen]
     B -->|Tab Index 2| E[AksiKebiasaanAirScreen]
     B -->|Tab Index 3| F[EdukasiSdgScreen]
+    C -->|Profil / Keluar| L
 
     C -->|Quick Nav| B
     D -->|Real-Time Recalculations| D1[Activity Liter Calculations & Progress Bars]

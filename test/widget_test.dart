@@ -9,8 +9,12 @@ void main() {
     tester.view.devicePixelRatio = 2.625;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    // Build AquaGuardApp (defaulting to Tab 1: Tracker)
-    await tester.pumpWidget(const AquaGuardApp());
+    // Build AquaGuardApp (specifying Tab 1: Tracker)
+    await tester.pumpWidget(
+      const AquaGuardApp(
+        homeScreen: AquaGuardMainScaffold(initialIndex: 1),
+      ),
+    );
     await tester.pumpAndSettle();
 
     // Verify Header & Title
@@ -176,5 +180,45 @@ void main() {
 
     // Verify Bottom Navigation - 'Edukasi' label exists (active tab)
     expect(find.text('Edukasi'), findsWidgets);
+  });
+
+  testWidgets('AquaGuard Login & Autentikasi Screen Smoke Test',
+      (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    // Build AquaGuardApp with default LoginScreen
+    await tester.pumpWidget(const AquaGuardApp());
+    await tester.pumpAndSettle();
+
+    // Verify Brand & Titles
+    expect(find.text('AquaGuard'), findsOneWidget);
+    expect(find.text('SDG 6'), findsOneWidget);
+    expect(find.text('Masuk'), findsOneWidget);
+    expect(find.text('Daftar Akun'), findsOneWidget);
+    expect(find.text('Selamat Datang Kembali! 👋'), findsOneWidget);
+    expect(find.text('Alamat Email'), findsOneWidget);
+    expect(find.text('Kata Sandi'), findsOneWidget);
+    expect(find.text('Lupa sandi?'), findsOneWidget);
+    expect(find.text('Ingat perangkat ini'), findsOneWidget);
+    expect(find.text('100% Client-Side'), findsOneWidget);
+
+    // Verify Action Buttons
+    expect(find.text('Masuk ke AquaGuard'), findsOneWidget);
+    expect(find.text('Lanjutkan dengan Google'), findsOneWidget);
+    expect(find.text('Masuk Langsung sebagai Tamu (Mode Demo)'), findsOneWidget);
+
+    // Test tab toggle to 'Daftar Akun'
+    await tester.tap(find.text('Daftar Akun'));
+    await tester.pumpAndSettle();
+    expect(find.text('Buat Akun Baru! 🚀'), findsOneWidget);
+    expect(find.text('Nama Lengkap'), findsOneWidget);
+    expect(find.text('Daftar ke AquaGuard'), findsOneWidget);
+
+    // Test tap 'Daftar ke AquaGuard' navigates to Dashboard
+    await tester.tap(find.text('Daftar ke AquaGuard'));
+    await tester.pumpAndSettle();
+    expect(find.text('Status Kuota Air Hari Ini'), findsOneWidget);
   });
 }

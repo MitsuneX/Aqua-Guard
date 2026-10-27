@@ -4,13 +4,16 @@ import 'package:flutter/material.dart';
 import 'screens/aksi_screen.dart';
 import 'screens/edukasi_screen.dart';
 import 'screens/tracker_screen.dart';
+import 'screens/login_screen.dart';
 
 void main() {
   runApp(const AquaGuardApp());
 }
 
 class AquaGuardApp extends StatelessWidget {
-  const AquaGuardApp({super.key});
+  final Widget? homeScreen;
+
+  const AquaGuardApp({super.key, this.homeScreen});
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +28,8 @@ class AquaGuardApp extends StatelessWidget {
           primary: const Color(0xFF0284C7),
         ),
       ),
-      // Tab 1 (Tracker) dibuka secara default untuk halaman Kalkulator & Tracker Air
-      home: const AquaGuardMainScaffold(initialIndex: 1),
+      // Layar awal autentikasi (Login / Sign Up) sesuai alur AquaGuard
+      home: homeScreen ?? const LoginScreen(),
     );
   }
 }
@@ -35,7 +38,7 @@ class AquaGuardApp extends StatelessWidget {
 class AquaGuardMainScaffold extends StatefulWidget {
   final int initialIndex;
 
-  const AquaGuardMainScaffold({super.key, this.initialIndex = 1});
+  const AquaGuardMainScaffold({super.key, this.initialIndex = 0});
 
   @override
   State<AquaGuardMainScaffold> createState() => _AquaGuardMainScaffoldState();
@@ -397,24 +400,117 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(width: 10),
             // Tombol Avatar Profil
-            Container(
-              width: 40,
-              height: 40,
-              decoration: const BoxDecoration(
-                color: Color(0xFF0F3B5F),
-                shape: BoxShape.circle,
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.person,
-                  color: Colors.white,
-                  size: 22,
+            GestureDetector(
+              onTap: () => _showProfileSheet(context),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF0F3B5F),
+                  shape: BoxShape.circle,
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: 22,
+                  ),
                 ),
               ),
             ),
           ],
         ),
       ],
+    );
+  }
+
+  void _showProfileSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE2E8F0),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF0F3B5F),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.person, color: Colors.white, size: 28),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Farhan Ramadhan',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF0F172A),
+                          ),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'farhan@aquaguard.id',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF64748B),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                const Divider(color: Color(0xFFF1F5F9)),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.logout_rounded, color: Color(0xFFEF4444)),
+                  title: const Text(
+                    'Keluar ke Halaman Login',
+                    style: TextStyle(
+                      color: Color(0xFFEF4444),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14.5,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (route) => false,
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
