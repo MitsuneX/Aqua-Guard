@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:aquaguard/main.dart';
+import 'package:aquaguard/screens/login_screen.dart';
 
 void main() {
   testWidgets('AquaGuard Kalkulator & Tracker Air Screen Smoke Test',
@@ -182,14 +183,80 @@ void main() {
     expect(find.text('Edukasi'), findsWidgets);
   });
 
+  testWidgets('AquaGuard Welcome & Onboarding Screen Smoke Test',
+      (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    // Build AquaGuardApp with default WelcomeScreen
+    await tester.pumpWidget(const AquaGuardApp());
+    await tester.pumpAndSettle();
+
+    // Verify Header Elements
+    expect(find.text('AquaGuard'), findsOneWidget);
+    expect(find.text('SDG 6'), findsOneWidget);
+    expect(find.text('Konservasi Air & Sanitasi Bersih'), findsOneWidget);
+    expect(find.text('Hijau & Lestari'), findsOneWidget);
+
+    // Verify Hero Floating Badges
+    expect(find.text('100+ L Dihemat/Hari'), findsOneWidget);
+    expect(find.text('Target SDG 6'), findsOneWidget);
+    expect(find.text('Dampak Lestari'), findsOneWidget);
+
+    // Verify Main Typography
+    expect(
+      find.text('Jaga Setiap Tetes,\nSelamatkan Masa Depan'),
+      findsOneWidget,
+    );
+    expect(
+      find.text(
+        'Pantau penggunaan air harianmu, bangun kebiasaan hemat berkelanjutan, dan dukung terwujudnya akses air bersih & sanitasi aman untuk semua.',
+      ),
+      findsOneWidget,
+    );
+
+    // Verify 3 Feature Cards
+    expect(find.text('Pencatatan Cepat & Akurat'), findsOneWidget);
+    expect(find.text('Log instan debit keran, mandi, dan dapur'), findsOneWidget);
+    expect(find.text('Misi Harian Berkelanjutan'), findsOneWidget);
+    expect(
+      find.text('Tantangan mikro ramah lingkungan setiap hari'),
+      findsOneWidget,
+    );
+    expect(find.text('Analisis Efisiensi Nyata'), findsOneWidget);
+    expect(
+      find.text('Evaluasi jejak air pribadi berbasis SDG 6'),
+      findsOneWidget,
+    );
+
+    // Verify Action Buttons
+    expect(find.text('Mulai Sekarang'), findsOneWidget);
+    expect(find.text('Lanjut sebagai Tamu (Demo Mode) →'), findsOneWidget);
+    expect(
+      find.text('Prototipe Edukatif Mahasiswa • Berkomitmen pada SDG 6'),
+      findsOneWidget,
+    );
+
+    // Test: Tapping 'Mulai Sekarang' navigates to LoginScreen
+    await tester.ensureVisible(find.text('Mulai Sekarang'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Mulai Sekarang'));
+    await tester.pumpAndSettle();
+    expect(find.text('Selamat Datang Kembali! 👋'), findsOneWidget);
+    expect(find.text('Masuk ke AquaGuard'), findsOneWidget);
+  });
+
   testWidgets('AquaGuard Login & Autentikasi Screen Smoke Test',
       (WidgetTester tester) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 2.625;
     addTearDown(() => tester.view.resetPhysicalSize());
 
-    // Build AquaGuardApp with default LoginScreen
-    await tester.pumpWidget(const AquaGuardApp());
+    // Build AquaGuardApp with LoginScreen
+    await tester.pumpWidget(
+      const AquaGuardApp(homeScreen: LoginScreen()),
+    );
     await tester.pumpAndSettle();
 
     // Verify Brand & Titles
