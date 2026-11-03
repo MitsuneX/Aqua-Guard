@@ -1323,36 +1323,42 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if (_quizSubmitted) ...[
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 9,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isCorrectAnswer
-                        ? const Color(0xFFF0FDF4)
-                        : const Color(0xFFF1F5F9),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: isCorrectAnswer
-                          ? const Color(0xFF86EFAC)
-                          : const Color(0xFFCBD5E1),
-                    ),
-                  ),
-                  child: Text(
-                    isCorrectAnswer ? '+15 XP' : '+0 XP',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      color: isCorrectAnswer
-                          ? const Color(0xFF15803D)
-                          : const Color(0xFF64748B),
-                    ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 9,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: !_quizSubmitted
+                      ? const Color(0xFFFFF7ED)
+                      : (isCorrectAnswer
+                          ? const Color(0xFFF0FDF4)
+                          : const Color(0xFFF1F5F9)),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: !_quizSubmitted
+                        ? const Color(0xFFFED7AA)
+                        : (isCorrectAnswer
+                            ? const Color(0xFF86EFAC)
+                            : const Color(0xFFCBD5E1)),
                   ),
                 ),
-              ],
+                child: Text(
+                  !_quizSubmitted
+                      ? '+15 XP'
+                      : (isCorrectAnswer ? '+15 XP' : '+0 XP'),
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: !_quizSubmitted
+                        ? const Color(0xFFEA580C)
+                        : (isCorrectAnswer
+                            ? const Color(0xFF15803D)
+                            : const Color(0xFF64748B)),
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 14),
