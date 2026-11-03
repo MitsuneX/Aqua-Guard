@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import 'screens/aksi_screen.dart';
@@ -92,8 +93,12 @@ class _AquaGuardMainScaffoldState extends State<AquaGuardMainScaffold> {
   }
 
   Widget _buildPlaceholderScreen(int index) {
-    final String title = index == 1 ? 'Tracker Konsumsi Air' : 'Modul Edukasi SDG 6';
-    final IconData icon = index == 1 ? Icons.calculate_outlined : Icons.school_outlined;
+    final String title = index == 1
+        ? 'Tracker Konsumsi Air'
+        : 'Modul Edukasi SDG 6';
+    final IconData icon = index == 1
+        ? Icons.calculate_outlined
+        : Icons.school_outlined;
     final String desc = index == 1
         ? 'Fitur kalkulator dan pemantauan analitik meteran air cerdas.'
         : 'Pelajari konservasi air dan fakta penting seputar SDG 6.';
@@ -137,15 +142,27 @@ class _AquaGuardMainScaffoldState extends State<AquaGuardMainScaffold> {
                 const SizedBox(height: 24),
                 ElevatedButton.icon(
                   onPressed: () => _onNavTap(2),
-                  icon: const Icon(Icons.arrow_back, color: Colors.white, size: 18),
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 18,
+                  ),
                   label: const Text(
                     'Kembali ke Tab Aksi',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF0F4C81),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                 ),
               ],
@@ -156,9 +173,7 @@ class _AquaGuardMainScaffoldState extends State<AquaGuardMainScaffold> {
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
-          border: Border(
-            top: BorderSide(color: Color(0xFFE2E8F0), width: 1.0),
-          ),
+          border: Border(top: BorderSide(color: Color(0xFFE2E8F0), width: 1.0)),
         ),
         child: BottomNavigationBar(
           currentIndex: _selectedNavIndex,
@@ -277,8 +292,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        backgroundColor:
-            _isChallengeCompleted ? const Color(0xFF059669) : const Color(0xFF475569),
+        backgroundColor: _isChallengeCompleted
+            ? const Color(0xFF059669)
+            : const Color(0xFF475569),
       ),
     );
   }
@@ -295,7 +311,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             constraints: const BoxConstraints(maxWidth: 460),
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 12.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -426,11 +445,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   shape: BoxShape.circle,
                 ),
                 child: const Center(
-                  child: Icon(
-                    Icons.person,
-                    color: Colors.white,
-                    size: 22,
-                  ),
+                  child: Icon(Icons.person, color: Colors.white, size: 22),
                 ),
               ),
             ),
@@ -506,11 +521,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
-                Icons.water_drop,
-                size: 18,
-                color: Color(0xFF0284C7),
-              ),
+              const Icon(Icons.water_drop, size: 18, color: Color(0xFF0284C7)),
               const SizedBox(width: 6),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -593,7 +604,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               const SizedBox(width: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFE0F2FE),
                   borderRadius: BorderRadius.circular(16),
@@ -648,7 +662,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       const SizedBox(height: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFF0FDF4),
                           borderRadius: BorderRadius.circular(16),
@@ -708,43 +725,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
           const Divider(height: 1, thickness: 1, color: Color(0xFFF1F5F9)),
           const SizedBox(height: 16),
 
-          // Bagian Catat Cepat
+          // Bagian Catat Cepat (di dalam _buildWaterQuotaCard)
           const Text(
             '+ CATAT CEPAT',
             style: TextStyle(
               fontSize: 10.5,
               fontWeight: FontWeight.w800,
-              letterSpacing: 1.2,
+              letterSpacing: 1.0,
               color: Color(0xFF475569),
             ),
           ),
           const SizedBox(height: 10),
 
-          // 3 Tombol Aksi Cepat Horizontal
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            child: Row(
-              children: [
-                _buildQuickLogButton(
-                  icon: Icons.local_drink_outlined,
-                  label: '+ 250ml Air',
-                  onTap: () => _addWater(0.25, 'minum'),
-                ),
-                const SizedBox(width: 10),
-                _buildQuickLogButton(
-                  icon: Icons.shower_outlined,
-                  label: '+ Mandi 4m',
-                  onTap: () => _addWater(15.0, 'shower'),
-                ),
-                const SizedBox(width: 10),
-                _buildQuickLogButton(
-                  icon: Icons.clean_hands_outlined,
-                  label: '+ Cuci Tangan',
-                  onTap: () => _addWater(2.0, 'cuci'),
-                ),
-              ],
-            ),
+          // Menggunakan Wrap agar tombol tidak terpotong ke samping pada layar mobile
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _buildQuickLogButton(
+                icon: Icons.local_drink_outlined,
+                label: '+1 Gelas Air',
+                onTap: () => _addWater(0.25, 'minum'),
+              ),
+              _buildQuickLogButton(
+                icon: Icons.shower_outlined,
+                label: '+Mandi Singkat',
+                onTap: () => _addWater(15.0, 'shower'),
+              ),
+              _buildQuickLogButton(
+                icon: Icons.clean_hands_outlined,
+                label: '+Cuci Tangan',
+                onTap: () => _addWater(2.0, 'cuci'),
+              ),
+            ],
           ),
         ],
       ),
@@ -758,11 +771,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }) {
     return Column(
       children: [
-        Icon(
-          icon,
-          size: 22,
-          color: const Color(0xFF64748B),
-        ),
+        Icon(icon, size: 22, color: const Color(0xFF64748B)),
         const SizedBox(height: 6),
         Text(
           title,
@@ -794,27 +803,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
           decoration: BoxDecoration(
             color: const Color(0xFFEDF5FD),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(color: const Color(0xFFD8E9F9)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                icon,
-                size: 18,
-                color: const Color(0xFF0284C7),
-              ),
+              Icon(icon, size: 16, color: const Color(0xFF0284C7)),
               const SizedBox(width: 6),
               Text(
                 label,
                 style: const TextStyle(
-                  fontSize: 11.5,
+                  fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF0F172A),
                 ),
@@ -833,11 +838,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF0369A1),
-            Color(0xFF0E7490),
-            Color(0xFF0284C7),
-          ],
+          colors: [Color(0xFF0369A1), Color(0xFF0E7490), Color(0xFF0284C7)],
         ),
         borderRadius: BorderRadius.circular(22),
         boxShadow: const [
@@ -858,7 +859,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               Flexible(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0x2EFFFFFF),
                     borderRadius: BorderRadius.circular(20),
@@ -866,7 +870,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: const [
-                      Icon(Icons.track_changes_rounded, size: 13, color: Colors.white),
+                      Icon(
+                        Icons.track_changes_rounded,
+                        size: 13,
+                        color: Colors.white,
+                      ),
                       SizedBox(width: 5),
                       Flexible(
                         child: Text(
@@ -885,7 +893,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               const SizedBox(width: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0x2EFFFFFF),
                   borderRadius: BorderRadius.circular(20),
@@ -934,7 +945,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 TextSpan(
                   text: '~18 Liter',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
                 TextSpan(
                   text: ' air bersih bernilai tinggi untuk menjaga resapan air lokal.',
@@ -993,15 +1007,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ),
               const SizedBox(width: 8),
+              // Tombol Selesaikan Misi (di dalam _buildChallengeCard)
               Material(
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: _toggleChallenge,
                   borderRadius: BorderRadius.circular(22),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
-                      color: _isChallengeCompleted ? const Color(0xFFE0F2FE) : Colors.white,
+                      color: _isChallengeCompleted
+                          ? const Color(0xFFE0F2FE)
+                          : Colors.white,
                       borderRadius: BorderRadius.circular(22),
                       boxShadow: const [
                         BoxShadow(
@@ -1015,7 +1035,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          _isChallengeCompleted ? 'Selesai' : 'Tandai Selesai',
+                          _isChallengeCompleted
+                              ? 'Misi Selesai'
+                              : 'Selesaikan Misi',
                           style: TextStyle(
                             fontSize: 12.5,
                             fontWeight: FontWeight.w800,
@@ -1024,11 +1046,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 : const Color(0xFF026AA2),
                           ),
                         ),
-                        const SizedBox(width: 5),
+                        const SizedBox(width: 6),
                         Icon(
                           _isChallengeCompleted
                               ? Icons.check_circle_rounded
-                              : Icons.check_rounded,
+                              : Icons.arrow_forward_rounded,
                           size: 16,
                           color: _isChallengeCompleted
                               ? const Color(0xFF059669)
@@ -1123,11 +1145,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: const [
-                    Icon(
-                      Icons.circle,
-                      size: 7,
-                      color: Color(0xFF0284C7),
-                    ),
+                    Icon(Icons.circle, size: 7, color: Color(0xFF0284C7)),
                     SizedBox(width: 4),
                     Text(
                       'Aktif',
@@ -1145,9 +1163,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           const SizedBox(height: 14),
 
           // 2 Kotak Metrik: Kualitas Fisik & Standar Higienis
+          // 2 Kotak Metrik: Kondisi Air & Keamanan Konsumsi (di dalam _buildLocationMonitoringCard)
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Kotak 1: Kualitas Fisik
+              // Kotak 1: Kondisi Fisik Air
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(12),
@@ -1164,38 +1184,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         children: const [
                           Flexible(
                             child: Text(
-                              'Kualitas Fisik',
+                              'Kondisi Air',
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: 11,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w600,
                                 color: Color(0xFF64748B),
                               ),
                             ),
                           ),
                           Icon(
-                            Icons.science_outlined,
+                            Icons.water_drop_outlined,
                             size: 16,
                             color: Color(0xFF0284C7),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       const Text(
-                        'BAIK',
+                        'JERNIH',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Color(0xFF0F172A),
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 4),
                       const Text(
-                        'TDS: 110 ppm • pH: 7.2',
+                        'Tidak berbau, tidak berasa & bersih',
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 11.5,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF64748B),
+                          color: Color(0xFF475569),
+                          height: 1.35,
                         ),
                       ),
                     ],
@@ -1204,7 +1225,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               const SizedBox(width: 10),
 
-              // Kotak 2: Standar Higienis
+              // Kotak 2: Status Kelayakan Minum
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(12),
@@ -1221,39 +1242,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         children: const [
                           Flexible(
                             child: Text(
-                              'Standar Higienis',
+                              'Status Konsumsi',
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: 11,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.w600,
                                 color: Color(0xFF64748B),
                               ),
                             ),
                           ),
                           Icon(
-                            Icons.shield_outlined,
+                            Icons.verified_user_outlined,
                             size: 16,
                             color: Color(0xFF0284C7),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       const Text(
-                        'AMAN',
+                        'LAYAK MINUM',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: Color(0xFF0284C7),
                         ),
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 4),
                       const Text(
-                        'Layak Konsumsi\nSDG 6.1',
+                        'Aman diminum langsung di area kampus',
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 11.5,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF64748B),
-                          height: 1.2,
+                          color: Color(0xFF475569),
+                          height: 1.35,
                         ),
                       ),
                     ],
@@ -1408,25 +1429,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0x99BAE6FD),
-                    Color(0x4D38BDF8),
-                  ],
+                  colors: [Color(0x99BAE6FD), Color(0x4D38BDF8)],
                 ),
               ),
               child: Stack(
                 alignment: Alignment.center,
                 children: const [
-                  Icon(
-                    Icons.waves,
-                    size: 40,
-                    color: Color(0x400284C7),
-                  ),
-                  Icon(
-                    Icons.water,
-                    size: 32,
-                    color: Color(0xFF0284C7),
-                  ),
+                  Icon(Icons.waves, size: 40, color: Color(0x400284C7)),
+                  Icon(Icons.water, size: 32, color: Color(0xFF0284C7)),
                 ],
               ),
             ),
@@ -1485,12 +1495,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: Color(0xFFE2E8F0),
-            width: 1,
-          ),
-        ),
+        border: Border(top: BorderSide(color: Color(0xFFE2E8F0), width: 1)),
       ),
       child: BottomNavigationBar(
         currentIndex: _selectedNavIndex,
@@ -1558,8 +1563,10 @@ class DonutProgressPainter extends CustomPainter {
     const double gapAngle = 0.08; // sekitar ~4.5 derajat
     const double totalAngle = 2 * math.pi;
 
-    final double usedAngle = (totalAngle * progress.clamp(0.05, 0.95)) - gapAngle;
-    final double remainingAngle = (totalAngle * (1 - progress.clamp(0.05, 0.95))) - gapAngle;
+    final double usedAngle =
+        (totalAngle * progress.clamp(0.05, 0.95)) - gapAngle;
+    final double remainingAngle =
+        (totalAngle * (1 - progress.clamp(0.05, 0.95))) - gapAngle;
 
     // Mulai dari atas agak ke kanan (~1 o'clock) persis seperti pada gambar
     const double startAngle = -math.pi / 2 + 0.35;
@@ -1581,7 +1588,13 @@ class DonutProgressPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final double remainingStartAngle = startAngle + usedAngle + gapAngle;
-    canvas.drawArc(rect, remainingStartAngle, remainingAngle, false, remainingPaint);
+    canvas.drawArc(
+      rect,
+      remainingStartAngle,
+      remainingAngle,
+      false,
+      remainingPaint,
+    );
   }
 
   @override

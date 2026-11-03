@@ -1270,10 +1270,13 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
     );
   }
 
-  // ─────────────────────────────────────────────────
+// ─────────────────────────────────────────────────
   // 7. Tantangan Kuis Kilat
   // ─────────────────────────────────────────────────
   Widget _buildQuizSection() {
+    final bool isCorrectAnswer =
+        _quizSubmitted && _selectedQuizAnswer == _correctAnswer;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -1320,23 +1323,36 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF7ED),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFFFED7AA)),
-                ),
-                child: const Text(
-                  '+15 XP',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFFEA580C),
+              if (_quizSubmitted) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isCorrectAnswer
+                        ? const Color(0xFFF0FDF4)
+                        : const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: isCorrectAnswer
+                          ? const Color(0xFF86EFAC)
+                          : const Color(0xFFCBD5E1),
+                    ),
+                  ),
+                  child: Text(
+                    isCorrectAnswer ? '+15 XP' : '+0 XP',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      color: isCorrectAnswer
+                          ? const Color(0xFF15803D)
+                          : const Color(0xFF64748B),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ],
           ),
           const SizedBox(height: 14),
@@ -1371,48 +1387,6 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
               child: _buildQuizOption(index),
             );
           }),
-
-          // Footer kuis (setelah submit)
-          if (_quizSubmitted) ...[
-            const SizedBox(height: 14),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF0FDF4),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFBBF7D0)),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF22C55E),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.check,
-                      color: Colors.white,
-                      size: 13,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  const Expanded(
-                    child: Text(
-                      '+15 Poin Wawasan Ditambahkan — Selesai Hari Ini',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF15803D),
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
         ],
       ),
     );
