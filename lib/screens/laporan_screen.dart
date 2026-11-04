@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../services/points_manager.dart';
 import 'profile_screen.dart';
+import 'shop_screen.dart';
 
 /// Halaman Laporan Konservasi Air (Water Conservation Report Screen)
 /// Menampilkan analitik periodik (Harian, Mingguan, Bulanan), grafik pemakaian,
@@ -145,30 +147,9 @@ class _LaporanKonservasiAirScreenState extends State<LaporanKonservasiAirScreen>
         ),
       ),
       actions: [
-        // Lencana Poin (850 pts)
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 10),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          decoration: BoxDecoration(
-            color: const Color(0xFFE0F2FE),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFBAE6FD), width: 0.8),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              Icon(Icons.water_drop, color: Color(0xFF0284C7), size: 14),
-              SizedBox(width: 4),
-              Text(
-                '850 pts',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF006296),
-                ),
-              ),
-            ],
-          ),
+        // Lencana Poin Reaktif (Kapsul Poin menuju Shop)
+        const Center(
+          child: EcoPointsPillWidget(),
         ),
         const SizedBox(width: 8),
 
@@ -1765,26 +1746,12 @@ class _LaporanKonservasiAirScreenState extends State<LaporanKonservasiAirScreen>
 
         const SizedBox(height: 10),
 
-        // Tombol 2: Bagikan Pencapaian ke Media Sosial
+        // Tombol 2: Bagikan Pencapaian ke Media Sosial (Membuka Mode Pratinjau Bagikan sesuai Gambar 2)
         SizedBox(
           width: double.infinity,
           height: 48,
           child: OutlinedButton.icon(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  backgroundColor: const Color(0xFF0284C7),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  content: const Text(
-                    'Pencapaian berhasil disalin untuk dibagikan ke Media Sosial! 💧',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              );
-            },
+            onPressed: _showSharePreviewModal,
             icon: const Icon(Icons.share_outlined,
                 color: Color(0xFF0284C7), size: 19),
             label: const Text(
@@ -1807,37 +1774,48 @@ class _LaporanKonservasiAirScreenState extends State<LaporanKonservasiAirScreen>
 
         const SizedBox(height: 10),
 
-        // Tombol 3: Tukar Poin Konservasi di Shop
-        TextButton(
-          onPressed: _showShopModal,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              Icon(
-                Icons.card_giftcard_rounded,
-                color: Color(0xFF0284C7),
-                size: 18,
-              ),
-              SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  'Tukar Poin Konservasi di Shop (850 pts)',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
+        // Tombol 3: Tukar Poin Konservasi di Shop (Terhubung langsung ke ShopScreen)
+        AnimatedBuilder(
+          animation: EcoPointsManager(),
+          builder: (context, _) {
+            final pts = EcoPointsManager().points;
+            return TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ShopScreen()),
+                );
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.card_giftcard_rounded,
+                    color: Color(0xFF0284C7),
+                    size: 18,
+                  ),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      'Tukar Poin Konservasi di Shop ($pts pts)',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF0284C7),
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  const Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 14,
                     color: Color(0xFF0284C7),
                   ),
-                  overflow: TextOverflow.ellipsis,
-                ),
+                ],
               ),
-              SizedBox(width: 4),
-              Icon(
-                Icons.arrow_forward_rounded,
-                size: 14,
-                color: Color(0xFF0284C7),
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ],
     );
@@ -2059,115 +2037,1040 @@ class _LaporanKonservasiAirScreenState extends State<LaporanKonservasiAirScreen>
   }
 
   // ─────────────────────────────────────────────────────────
-  // Modal Shop Tukar Poin
+  // Modal Mode Pratinjau Bagikan (Sesuai Gambar 2)
+  // Menampilkan Sertifikat Resmi Dampak Konservasi Air UN SDG 6 Edition
+  // dengan latar belakang gelap, detail pengguna, kartu metrik, QR & tombol bagikan
   // ─────────────────────────────────────────────────────────
-  void _showShopModal() {
-    showModalBottomSheet(
+  void _showSharePreviewModal() {
+    showGeneralDialog(
       context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 18.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFCBD5E1),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
+      barrierDismissible: true,
+      barrierLabel: 'Mode Pratinjau Bagikan',
+      barrierColor: const Color(0xFF0F172A).withValues(alpha: 0.94),
+      transitionDuration: const Duration(milliseconds: 260),
+      pageBuilder: (ctx, anim1, anim2) {
+        final currentPoints = EcoPointsManager().points;
+
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SafeArea(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 18.0,
+                    vertical: 12.0,
                   ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Tukar Poin Konservasi (Shop)',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF0F172A),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Saldo Poin Kamu: 850 pts',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF0284C7),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE0F2FE),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(Icons.park_outlined, color: Color(0xFF0284C7)),
-                  ),
-                  title: const Text(
-                    '1 Bibit Mangrove Konservasi',
-                    style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),
-                  ),
-                  subtitle: const Text('Butuh 1.000 pts (Kurang 150 pts lagi)'),
-                  trailing: const Text(
-                    'Kunci',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF94A3B8),
-                    ),
-                  ),
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFDCFCE7),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(Icons.water_drop, color: Color(0xFF16A34A)),
-                  ),
-                  title: const Text(
-                    'Aerator Kran Hemat Air 40%',
-                    style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),
-                  ),
-                  subtitle: const Text('Tukar 600 pts'),
-                  trailing: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(ctx);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Voucher Aerator Kran berhasil diklaim! 🎉'),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF006296),
-                      minimumSize: const Size(60, 32),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // 1. Header Mode Pratinjau Bagikan + Tombol Silang (Tutup)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF22C55E),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Mode Pratinjau Bagikan',
+                                style: TextStyle(
+                                  color: Color(0xFF94A3B8),
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                          InkWell(
+                            onTap: () => Navigator.pop(ctx),
+                            borderRadius: BorderRadius.circular(16),
+                            child: Container(
+                              width: 32,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1E293B),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.12),
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.close_rounded,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    child: const Text('Klaim', style: TextStyle(color: Colors.white)),
+
+                      const SizedBox(height: 14),
+
+                      // 2. Kartu Sertifikat Konservasi (White Rounded Card)
+                      _buildShareCertificateCard(currentPoints),
+
+                      const SizedBox(height: 16),
+
+                      // 3. Tombol Utama: Simpan Gambar (Siap Bagikan)
+                      Container(
+                        width: double.infinity,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF06B6D4), Color(0xFF0D9488)],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF06B6D4)
+                                  .withValues(alpha: 0.35),
+                              blurRadius: 14,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pop(ctx);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: const Color(0xFF0D9488),
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  content: Row(
+                                    children: const [
+                                      Icon(Icons.check_circle_rounded,
+                                          color: Colors.white),
+                                      SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          'Gambar sertifikat disimpan ke Galeri! Siap dibagikan ke Media Sosial 💧📸',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(14),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(
+                                    Icons.file_upload_outlined,
+                                    color: Colors.white,
+                                    size: 19,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Simpan Gambar (Siap Bagikan)',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 13.5,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // 4. Baris 2 Tombol Aksi Bawah: Salin Ringkasan & Tutup
+                      Row(
+                        children: [
+                          Expanded(
+                            child: SizedBox(
+                              height: 42,
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      backgroundColor: const Color(0xFF006296),
+                                      behavior: SnackBarBehavior.floating,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      content: const Text(
+                                        'Ringkasan pencapaian konservasi disalin ke clipboard! 📋💧',
+                                        style: TextStyle(
+                                          fontSize: 12.5,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.copy_rounded,
+                                  color: Colors.white,
+                                  size: 15,
+                                ),
+                                label: const Text(
+                                  'Salin Ringkasan',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF1E293B),
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: BorderSide(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.12),
+                                      width: 0.8,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: SizedBox(
+                              height: 42,
+                              child: ElevatedButton(
+                                onPressed: () => Navigator.pop(ctx),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF1E293B),
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: BorderSide(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.12),
+                                      width: 0.8,
+                                    ),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Tutup',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 12),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
         );
       },
+      transitionBuilder: (ctx, anim, secondaryAnim, child) {
+        return FadeTransition(
+          opacity: anim,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.94, end: 1.0).animate(
+              CurvedAnimation(parent: anim, curve: Curves.easeOutBack),
+            ),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // Widget Kartu Sertifikat Resmi (Mode Pratinjau Bagikan - Gambar 2)
+  // ─────────────────────────────────────────────────────────
+  Widget _buildShareCertificateCard(int currentPoints) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // 1. Header Kartu: Logo AquaGuard & OFFICIAL SDG 6 Badge
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.asset(
+                              'assets/images/aquaguard_logo.png',
+                              width: 34,
+                              height: 34,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                width: 34,
+                                height: 34,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF0284C7),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Icon(
+                                  Icons.water_drop,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                Text(
+                                  'AquaGuard',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w900,
+                                    color: Color(0xFF0F172A),
+                                    letterSpacing: -0.3,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  'UN SDG 6 EDITION',
+                                  style: TextStyle(
+                                    fontSize: 9.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF0284C7),
+                                    letterSpacing: 0.6,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFDCFCE7),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: const Color(0xFF86EFAC),
+                          width: 0.8,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Icon(
+                            Icons.check_circle_rounded,
+                            color: Color(0xFF16A34A),
+                            size: 13,
+                          ),
+                          SizedBox(width: 4),
+                          Text(
+                            'OFFICIAL SDG 6',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF15803D),
+                              letterSpacing: 0.3,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 8),
+
+                // 2. Subtitle: Sertifikat Dampak Konservasi Air Kampus • Minggu Ke-4
+                Row(
+                  children: const [
+                    Icon(Icons.circle, size: 5, color: Color(0xFF0284C7)),
+                    SizedBox(width: 5),
+                    Flexible(
+                      child: Text(
+                        'Sertifikat Dampak Konservasi Air Kampus • Minggu Ke-4',
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF64748B),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                // 3. User Identity Box: Nelvin C. (Verified) + Duta SDG 6 + Pahlawan Air
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: const Color(0xFFE2E8F0),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      // Avatar Pengguna
+                      Stack(
+                        children: [
+                          Container(
+                            width: 42,
+                            height: 42,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFF006296),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.person,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: Container(
+                              width: 14,
+                              height: 14,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF16A34A),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.check,
+                                size: 9,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Text(
+                                  'Nelvin C.',
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF0F172A),
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFE0F2FE),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: const Text(
+                                    'Verified',
+                                    style: TextStyle(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF0284C7),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 1),
+                            const Text(
+                              'Duta SDG 6 • Kampus Hijau',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF64748B),
+                              ),
+                            ),
+                            const SizedBox(height: 3),
+                            const Text(
+                              '🎉 Pahlawan Air Minggu Ini!',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF0F172A),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // 4. Hero Card: TOTAL AIR DIHEMAT MINGGU INI (245 Liter)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0F9FF),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: const Color(0xFFBAE6FD),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      const Text(
+                        'TOTAL AIR DIHEMAT MINGGU INI',
+                        style: TextStyle(
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF64748B),
+                          letterSpacing: 0.6,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      const Text(
+                        '245 Liter',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF006296),
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: const Color(0xFFBAE6FD),
+                            width: 0.8,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(
+                              Icons.bolt_rounded,
+                              size: 13,
+                              color: Color(0xFF0284C7),
+                            ),
+                            SizedBox(width: 3),
+                            Flexible(
+                              child: Text(
+                                '≈ Setara 12 Hari Kebutuhan Air Minum Bersih',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF006296),
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                // 5. Grid 4 Metrik (2x2)
+                Row(
+                  children: [
+                    // Kartu 1: Eco-Points
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(9),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const [
+                                Flexible(
+                                  child: Text(
+                                    'Eco-Points',
+                                    style: TextStyle(
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF64748B),
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.eco_rounded,
+                                  size: 12,
+                                  color: Color(0xFF10B981),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    '$currentPoints',
+                                    style: const TextStyle(
+                                      fontSize: 14.5,
+                                      fontWeight: FontWeight.w900,
+                                      color: Color(0xFF0F172A),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Text(
+                                    '+120 mg',
+                                    style: TextStyle(
+                                      fontSize: 9.5,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFF16A34A),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+
+                    // Kartu 2: Streak Aktif
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(9),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const [
+                                Flexible(
+                                  child: Text(
+                                    'Streak Aktif',
+                                    style: TextStyle(
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF64748B),
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.local_fire_department_rounded,
+                                  size: 12,
+                                  color: Color(0xFFEA580C),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Row(
+                                children: const [
+                                  Text(
+                                    '12 Hari',
+                                    style: TextStyle(
+                                      fontSize: 14.5,
+                                      fontWeight: FontWeight.w900,
+                                      color: Color(0xFF0F172A),
+                                    ),
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Terjaga',
+                                    style: TextStyle(
+                                      fontSize: 9.5,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFFEA580C),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 8),
+
+                Row(
+                  children: [
+                    // Kartu 3: Hemat PDAM
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(9),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const [
+                                Flexible(
+                                  child: Text(
+                                    'Hemat PDAM',
+                                    style: TextStyle(
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF64748B),
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.savings_outlined,
+                                  size: 12,
+                                  color: Color(0xFFD97706),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            const FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Rp 18.500',
+                                style: TextStyle(
+                                  fontSize: 14.5,
+                                  fontWeight: FontWeight.w900,
+                                  color: Color(0xFF0F172A),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+
+                    // Kartu 4: Peringkat Kampus
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(9),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const [
+                                Flexible(
+                                  child: Text(
+                                    'Peringkat Kampus',
+                                    style: TextStyle(
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF64748B),
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.emoji_events_outlined,
+                                  size: 12,
+                                  color: Color(0xFFEAB308),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Row(
+                                children: const [
+                                  Text(
+                                    'Top 5%',
+                                    style: TextStyle(
+                                      fontSize: 14.5,
+                                      fontWeight: FontWeight.w900,
+                                      color: Color(0xFF0F172A),
+                                    ),
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Fakultas',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF64748B),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                // 6. Garis Pembatas Tiket Perforasi (Notch Cutout)
+                _buildTicketDivider(),
+
+                const SizedBox(height: 14),
+
+                // 7. Footer Sertifikat: QR Code & Nomor Sertifikat + Target SDG 6.4
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Kolom Kiri: QR Code & Nomor Sertifikat
+                    Row(
+                      children: [
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF0F172A),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.qr_code_2_rounded,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 7),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Text(
+                              'NOMOR SERTIFIKAT',
+                              style: TextStyle(
+                                fontSize: 8,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF94A3B8),
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                            Text(
+                              'AG-2026-MKS-899',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF1E293B),
+                                fontFamily: 'monospace',
+                              ),
+                            ),
+                            Text(
+                              '✓ Tervalidasi Otomatis',
+                              style: TextStyle(
+                                fontSize: 8.5,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF16A34A),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+
+                    // Kolom Kanan: Sasaran SDG 6.4
+                    Flexible(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.track_changes_rounded,
+                            color: Color(0xFFEF4444),
+                            size: 15,
+                          ),
+                          const SizedBox(width: 5),
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                Text(
+                                  'Target SDG 6.4',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF006296),
+                                  ),
+                                ),
+                                Text(
+                                  '"Setiap tetes diperhitungkan untuk masa depan."',
+                                  style: TextStyle(
+                                    fontSize: 8,
+                                    fontStyle: FontStyle.italic,
+                                    color: Color(0xFF64748B),
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Garis pembatas gaya tiket bersambung dengan lekukan (cutout notch) kiri-kanan
+  Widget _buildTicketDivider() {
+    return Row(
+      children: [
+        // Lekukan notch kiri (menembus latar belakang gelap)
+        Transform.translate(
+          offset: const Offset(-24, 0),
+          child: Container(
+            width: 14,
+            height: 14,
+            decoration: const BoxDecoration(
+              color: Color(0xFF0F172A),
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+        // Garis putus-putus
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              const dashWidth = 5.0;
+              const dashSpace = 4.0;
+              final count =
+                  (constraints.maxWidth / (dashWidth + dashSpace)).floor();
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: List.generate(count, (_) {
+                  return const SizedBox(
+                    width: dashWidth,
+                    height: 1.0,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(color: Color(0xFFCBD5E1)),
+                    ),
+                  );
+                }),
+              );
+            },
+          ),
+        ),
+        // Lekukan notch kanan (menembus latar belakang gelap)
+        Transform.translate(
+          offset: const Offset(24, 0),
+          child: Container(
+            width: 14,
+            height: 14,
+            decoration: const BoxDecoration(
+              color: Color(0xFF0F172A),
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

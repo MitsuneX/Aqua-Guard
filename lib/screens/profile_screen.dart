@@ -27,8 +27,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   /// Dialog Edit Profil Sederhana
   void _showEditProfileDialog() {
-    final TextEditingController nameEditController =
-        TextEditingController(text: _userName);
+    final TextEditingController nameEditController = TextEditingController(
+      text: _userName,
+    );
 
     showDialog(
       context: context,
@@ -64,7 +65,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Batal', style: TextStyle(color: Color(0xFF64748B))),
+              child: const Text(
+                'Batal',
+                style: TextStyle(color: Color(0xFF64748B)),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -81,7 +85,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text('Simpan', style: TextStyle(color: Colors.white)),
+              child: const Text(
+                'Simpan',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );
@@ -115,12 +122,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           content: const Text(
             'Apakah Anda yakin ingin keluar dari sesi demo ini? Anda akan kembali ke halaman login.',
-            style: TextStyle(fontSize: 13.5, color: Color(0xFF64748B), height: 1.4),
+            style: TextStyle(
+              fontSize: 13.5,
+              color: Color(0xFF64748B),
+              height: 1.4,
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Batal', style: TextStyle(color: Color(0xFF64748B))),
+              child: const Text(
+                'Batal',
+                style: TextStyle(color: Color(0xFF64748B)),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -137,7 +151,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text('Keluar', style: TextStyle(color: Colors.white)),
+              child: const Text(
+                'Keluar',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );
@@ -201,7 +218,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    child: const Text('Tutup', style: TextStyle(color: Colors.white)),
+                    child: const Text(
+                      'Tutup',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],
@@ -333,7 +353,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Row(
             children: [
-              // Avatar dengan Badge Tetes Air
+              // Avatar dengan Tombol Edit (Pensil) di dalam Stack
               Stack(
                 children: [
                   Container(
@@ -341,7 +361,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 68,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFFBAE6FD), width: 2.5),
+                      border: Border.all(
+                        color: const Color(0xFFBAE6FD),
+                        width: 2.5,
+                      ),
                       gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -362,19 +385,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Positioned(
                     bottom: 0,
                     right: 0,
-                    child: Container(
-                      width: 22,
-                      height: 22,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF006296),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.water_drop,
-                          color: Colors.white,
-                          size: 11,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _showEditProfileDialog,
+                        customBorder: const CircleBorder(),
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF006296),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                          child: const Center(
+                            child: Icon(
+                              Icons.edit_rounded,
+                              color: Colors.white,
+                              size: 12,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -421,7 +451,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE0F2FE),
                         borderRadius: BorderRadius.circular(12),
@@ -429,7 +462,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.public_rounded, size: 12, color: Color(0xFF0284C7)),
+                          const Icon(
+                            Icons.public_rounded,
+                            size: 12,
+                            color: Color(0xFF0284C7),
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             _userRole,
@@ -450,9 +487,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           const SizedBox(height: 14),
 
-          // Banner Level & Tombol Edit
+          // Banner Level Relawan (Tanpa Tombol Edit)
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
               color: const Color(0xFFF0F8FF),
               borderRadius: BorderRadius.circular(14),
@@ -498,23 +535,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                 ),
-                ElevatedButton.icon(
-                  onPressed: _showEditProfileDialog,
-                  icon: const Icon(Icons.edit_rounded, size: 13, color: Colors.white),
-                  label: const Text(
-                    'Edit',
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF006296),
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    minimumSize: const Size(0, 32),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
@@ -534,7 +554,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const Expanded(
               child: Row(
                 children: [
-                  Icon(Icons.bar_chart_rounded, color: Color(0xFF006296), size: 20),
+                  Icon(
+                    Icons.bar_chart_rounded,
+                    color: Color(0xFF006296),
+                    size: 20,
+                  ),
                   SizedBox(width: 6),
                   Expanded(
                     child: Text(
@@ -640,10 +664,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFF38BDF8),
-          width: 1.5,
-        ),
+        border: Border.all(color: const Color(0xFF38BDF8), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF0284C7).withValues(alpha: 0.06),
@@ -665,7 +686,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             );
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 14.0,
+              vertical: 12.0,
+            ),
             child: Row(
               children: [
                 Container(
@@ -797,7 +821,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: TextStyle(
                   fontSize: isHighlightValue ? 19 : 22,
                   fontWeight: FontWeight.w900,
-                  color: isHighlightValue ? const Color(0xFF006296) : const Color(0xFF0F172A),
+                  color: isHighlightValue
+                      ? const Color(0xFF006296)
+                      : const Color(0xFF0F172A),
                 ),
               ),
               if (unit.isNotEmpty) ...[
@@ -845,7 +871,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header Poin & Badge
+          // Header Poin & Badge (Tanpa 850 Eco-Points di sebelah kanan)
           Row(
             children: [
               Container(
@@ -882,21 +908,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFDDF0FD),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Text(
-                  '850 Eco-Points',
-                  style: TextStyle(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF006296),
-                  ),
                 ),
               ),
             ],
@@ -944,7 +955,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: const LinearProgressIndicator(
                     value: 0.85,
                     backgroundColor: Color(0xFFBAE6FD),
-                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF006296)),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Color(0xFF006296),
+                    ),
                     minHeight: 8,
                   ),
                 ),
@@ -963,33 +976,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           const SizedBox(height: 14),
 
-          // Baris Lencana yang Dicapai
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+          // Baris Lencana yang Dicapai (Menggunakan Expanded & tanpa Scroll)
+          IntrinsicHeight(
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildBadgeItem(
-                  icon: Icons.water_drop_outlined,
-                  title: 'Pahlawan\nKeran',
-                  status: 'Tercapai',
+                Expanded(
+                  child: _buildBadgeItem(
+                    icon: Icons.water_drop_outlined,
+                    title: 'Pahlawan\nKeran',
+                    status: 'Tercapai',
+                  ),
                 ),
-                const SizedBox(width: 10),
-                _buildBadgeItem(
-                  icon: Icons.shower_outlined,
-                  title: 'Shower\nCepat',
-                  status: 'Tercapai',
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildBadgeItem(
+                    icon: Icons.shower_outlined,
+                    title: 'Shower\nCepat',
+                    status: 'Tercapai',
+                  ),
                 ),
-                const SizedBox(width: 10),
-                _buildBadgeItem(
-                  icon: Icons.search_rounded,
-                  title: 'Detektif\nBocor',
-                  status: 'Tercapai',
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildBadgeItem(
+                    icon: Icons.search_rounded,
+                    title: 'Detektif\nBocor',
+                    status: 'Tercapai',
+                  ),
                 ),
-                const SizedBox(width: 10),
-                _buildBadgeItem(
-                  icon: Icons.eco_outlined,
-                  title: 'Duta\nHemat',
-                  status: 'Tercapai',
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildBadgeItem(
+                    icon: Icons.eco_outlined,
+                    title: 'Duta\nHemat',
+                    status: 'Tercapai',
+                  ),
                 ),
               ],
             ),
@@ -1158,9 +1179,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   GestureDetector(
                     onTap: () => setState(() => _unit = 'Liter (L)'),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
-                        color: _unit == 'Liter (L)' ? const Color(0xFF006296) : Colors.transparent,
+                        color: _unit == 'Liter (L)'
+                            ? const Color(0xFF006296)
+                            : Colors.transparent,
                         borderRadius: BorderRadius.circular(18),
                       ),
                       child: Text(
@@ -1168,7 +1194,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
-                          color: _unit == 'Liter (L)' ? Colors.white : const Color(0xFF64748B),
+                          color: _unit == 'Liter (L)'
+                              ? Colors.white
+                              : const Color(0xFF64748B),
                         ),
                       ),
                     ),
@@ -1176,9 +1204,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   GestureDetector(
                     onTap: () => setState(() => _unit = 'Galon (Gal)'),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
-                        color: _unit == 'Galon (Gal)' ? const Color(0xFF006296) : Colors.transparent,
+                        color: _unit == 'Galon (Gal)'
+                            ? const Color(0xFF006296)
+                            : Colors.transparent,
                         borderRadius: BorderRadius.circular(18),
                       ),
                       child: Text(
@@ -1186,7 +1219,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
-                          color: _unit == 'Galon (Gal)' ? Colors.white : const Color(0xFF64748B),
+                          color: _unit == 'Galon (Gal)'
+                              ? Colors.white
+                              : const Color(0xFF64748B),
                         ),
                       ),
                     ),
@@ -1286,7 +1321,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           const Row(
             children: [
-              Icon(Icons.verified_user_outlined, color: Color(0xFF0284C7), size: 20),
+              Icon(
+                Icons.verified_user_outlined,
+                color: Color(0xFF0284C7),
+                size: 20,
+              ),
               SizedBox(width: 8),
               Expanded(
                 child: Column(
@@ -1327,7 +1366,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.info_outline_rounded, color: Color(0xFF0284C7), size: 16),
+                    Icon(
+                      Icons.info_outline_rounded,
+                      color: Color(0xFF0284C7),
+                      size: 16,
+                    ),
                     SizedBox(width: 6),
                     Expanded(
                       child: Text(
@@ -1413,7 +1456,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFF94A3B8)),
+            const Icon(
+              Icons.chevron_right_rounded,
+              size: 18,
+              color: Color(0xFF94A3B8),
+            ),
           ],
         ),
       ),

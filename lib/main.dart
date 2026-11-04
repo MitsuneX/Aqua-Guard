@@ -7,6 +7,7 @@ import 'screens/edukasi_screen.dart';
 import 'screens/tracker_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/profile_screen.dart';
+import 'services/points_manager.dart';
 
 void main() {
   runApp(const AquaGuardApp());
@@ -281,6 +282,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _isChallengeCompleted = !_isChallengeCompleted;
     });
 
+    if (_isChallengeCompleted) {
+      EcoPointsManager().addPoints(
+        50,
+        'Misi Harian: Mandi Cepat 4 Menit',
+        category: 'misi',
+      );
+    }
+
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -362,59 +371,71 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            // Logo resmi AquaGuard (wave + water drop)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                'assets/images/aquaguard_logo.png',
-                width: 44,
-                height: 44,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE0F2FE),
-                    borderRadius: BorderRadius.circular(12),
+        Expanded(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Logo resmi AquaGuard (wave + water drop)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  'assets/images/aquaguard_logo.png',
+                  width: 38,
+                  height: 38,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE0F2FE),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.water_drop, color: Color(0xFF0284C7)),
                   ),
-                  child: const Icon(Icons.water_drop, color: Color(0xFF0284C7)),
                 ),
               ),
-            ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                Text(
-                  'AquaGuard',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF0F3B5F),
-                    letterSpacing: -0.3,
-                  ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Text(
+                      'AquaGuard',
+                      style: TextStyle(
+                        fontSize: 16.5,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0F3B5F),
+                        letterSpacing: -0.3,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      'Beranda',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  'Beranda',
-                  style: TextStyle(
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF64748B),
-                  ),
-                ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
+        const SizedBox(width: 4),
         Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
+            // Pill Eco-Points Reaktif (💧 850 pts) -> Tekan untuk masuk Shop (Sesuai Gambar 3)
+            const EcoPointsPillWidget(),
+            const SizedBox(width: 6),
+
             // Tombol Notifikasi
             Container(
-              width: 40,
-              height: 40,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
@@ -424,13 +445,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 icon: const Icon(
                   Icons.notifications_none_rounded,
                   color: Color(0xFF1E293B),
-                  size: 20,
+                  size: 19,
                 ),
                 padding: EdgeInsets.zero,
                 onPressed: () {},
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 6),
             // Tombol Avatar Profil
             GestureDetector(
               onTap: () => Navigator.push(
@@ -438,14 +459,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 MaterialPageRoute(builder: (_) => const ProfileScreen()),
               ),
               child: Container(
-                width: 40,
-                height: 40,
+                width: 36,
+                height: 36,
                 decoration: const BoxDecoration(
                   color: Color(0xFF0F3B5F),
                   shape: BoxShape.circle,
                 ),
                 child: const Center(
-                  child: Icon(Icons.person, color: Colors.white, size: 22),
+                  child: Icon(Icons.person, color: Colors.white, size: 20),
                 ),
               ),
             ),

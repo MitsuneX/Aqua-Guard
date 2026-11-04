@@ -4,6 +4,8 @@ import 'package:aquaguard/main.dart';
 import 'package:aquaguard/screens/laporan_screen.dart';
 import 'package:aquaguard/screens/login_screen.dart';
 import 'package:aquaguard/screens/profile_screen.dart';
+import 'package:aquaguard/screens/shop_screen.dart';
+import 'package:aquaguard/services/points_manager.dart';
 
 void main() {
   testWidgets('AquaGuard Kalkulator & Tracker Air Screen Smoke Test',
@@ -412,8 +414,83 @@ void main() {
     expect(find.text('Sertifikat Konservasi Minggu Ke-4'), findsOneWidget);
     expect(find.text('Buka Rapor Konservasi Lengkap'), findsOneWidget);
 
-    // 8. Verify Bottom Action Buttons
+    // 8. Scroll down & Verify Bottom Action Buttons
+    await tester.scrollUntilVisible(
+      find.text('Bagikan Pencapaian ke Media Sosial'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+
     expect(find.text('Unduh Laporan Hemat Air (PDF)'), findsOneWidget);
     expect(find.text('Bagikan Pencapaian ke Media Sosial'), findsOneWidget);
+
+    // 9. Tap 'Bagikan Pencapaian ke Media Sosial' and verify Mode Pratinjau Bagikan (Gambar 2)
+    await tester.tap(find.text('Bagikan Pencapaian ke Media Sosial'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Mode Pratinjau Bagikan'), findsOneWidget);
+    expect(find.text('OFFICIAL SDG 6'), findsOneWidget);
+    expect(find.text('Nelvin C.'), findsOneWidget);
+    expect(find.text('245 Liter'), findsOneWidget);
+    expect(find.text('AG-2026-MKS-899'), findsOneWidget);
+    expect(find.text('Simpan Gambar (Siap Bagikan)'), findsOneWidget);
+    expect(find.text('Salin Ringkasan'), findsOneWidget);
+    expect(find.text('Tutup'), findsOneWidget);
+
+    // Close preview modal
+    await tester.tap(find.text('Tutup'));
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('AquaGuard Shop Screen Smoke Test', (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: ShopScreen(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Verify Title & Sub-header
+    expect(find.text('Pusat Tukar Poin'), findsWidgets);
+    expect(find.text('AQUAGUARD SDG 6'), findsOneWidget);
+    expect(find.text('Saldo Terkumpul'), findsOneWidget);
+    expect(find.text('Riwayat Poin'), findsOneWidget);
+    expect(find.text('Cara Dapat Poin'), findsOneWidget);
+
+    // Verify Categories
+    expect(find.text('Semua'), findsOneWidget);
+    expect(find.text('Voucher Kampus'), findsWidgets);
+    expect(find.text('Merchandise'), findsWidgets);
+    expect(find.text('Donasi Air'), findsWidgets);
+    expect(find.text('Aset Digital'), findsWidgets);
+
+    // Verify Reward Items
+    expect(find.text('Voucher Refill Air Kampus (5x)'), findsOneWidget);
+    expect(find.text('Diskon 25% Tumbler Stainless'), findsOneWidget);
+    expect(find.text('Pohon Resapan Air (Atas Nama Anda)'), findsOneWidget);
+    expect(find.text('Lencana Profil: Penjaga Mata Air'), findsOneWidget);
+
+    // Verify Impact Banner
+    expect(find.text('Dampak Air Bersih Anda'), findsOneWidget);
+  });
+
+  testWidgets('EcoPointsManager dynamic transaction test',
+      (WidgetTester tester) async {
+    final manager = EcoPointsManager();
+    final initialPoints = manager.points;
+
+    // Test adding points
+    manager.addPoints(50, 'Uji Tambah Poin', category: 'misi');
+    expect(manager.points, initialPoints + 50);
+
+    // Test redeeming points
+    final success = manager.redeemPoints(50, 'Uji Tukar Poin');
+    expect(success, isTrue);
+    expect(manager.points, initialPoints);
   });
 }

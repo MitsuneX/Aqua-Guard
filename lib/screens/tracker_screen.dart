@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/points_manager.dart';
 import 'profile_screen.dart';
 
 /// Halaman Mandiri "Kalkulator & Tracker Air" (Tab Tracker) - AquaGuard
@@ -327,11 +328,17 @@ class _KalkulatorTrackerAirScreenState
 
   // Simpan ke Log Harian
   void _saveToDailyLog() {
+    EcoPointsManager().addPoints(
+      20,
+      'Catat Log Harian Tracker Air ($_totalDailyLiters L)',
+      category: 'misi',
+    );
+
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Berhasil disimpan ke Log Harian! Estimasi: $_totalDailyLiters L tercatat. 💧📋',
+          'Berhasil disimpan ke Log Harian! Estimasi: $_totalDailyLiters L tercatat (+20 Poin). 💧📋',
         ),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
@@ -411,66 +418,78 @@ class _KalkulatorTrackerAirScreenState
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                'assets/images/aquaguard_logo.png',
-                width: 44,
-                height: 44,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE0F2FE),
-                    borderRadius: BorderRadius.circular(10),
+        Expanded(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  'assets/images/aquaguard_logo.png',
+                  width: 38,
+                  height: 38,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE0F2FE),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.water_drop, color: Color(0xFF0284C7)),
                   ),
-                  child: const Icon(Icons.water_drop, color: Color(0xFF0284C7)),
                 ),
               ),
-            ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  'AquaGuard',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF0F3B5F),
-                    letterSpacing: -0.3,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    if (widget.onNavigateToBeranda != null) {
-                      widget.onNavigateToBeranda!();
-                    } else if (widget.onBottomNavTap != null) {
-                      widget.onBottomNavTap!(0);
-                    }
-                  },
-                  child: const Text(
-                    'Beranda',
-                    style: TextStyle(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF64748B),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'AquaGuard',
+                      style: TextStyle(
+                        fontSize: 16.5,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0F3B5F),
+                        letterSpacing: -0.3,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
+                    GestureDetector(
+                      onTap: () {
+                        if (widget.onNavigateToBeranda != null) {
+                          widget.onNavigateToBeranda!();
+                        } else if (widget.onBottomNavTap != null) {
+                          widget.onBottomNavTap!(0);
+                        }
+                      },
+                      child: const Text(
+                        'Beranda',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF64748B),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
+        const SizedBox(width: 4),
         Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
+            // Pill Eco-Points Reaktif (💧 850 pts) -> Tekan untuk masuk Shop (Sesuai Gambar 3)
+            const EcoPointsPillWidget(),
+            const SizedBox(width: 6),
+
             Container(
-              width: 40,
-              height: 40,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
@@ -480,7 +499,7 @@ class _KalkulatorTrackerAirScreenState
                 icon: const Icon(
                   Icons.notifications_none_rounded,
                   color: Color(0xFF1E293B),
-                  size: 20,
+                  size: 19,
                 ),
                 padding: EdgeInsets.zero,
                 onPressed: () {
@@ -494,15 +513,15 @@ class _KalkulatorTrackerAirScreenState
                 },
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 6),
             GestureDetector(
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const ProfileScreen()),
               ),
               child: Container(
-                width: 40,
-                height: 40,
+                width: 36,
+                height: 36,
                 decoration: const BoxDecoration(
                   color: Color(0xFF0F3B5F),
                   shape: BoxShape.circle,
@@ -511,7 +530,7 @@ class _KalkulatorTrackerAirScreenState
                   child: Icon(
                     Icons.person,
                     color: Colors.white,
-                    size: 22,
+                    size: 20,
                   ),
                 ),
               ),
