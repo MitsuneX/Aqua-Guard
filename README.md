@@ -63,7 +63,8 @@ Mobile Front End (New)/
 │       ├── tracker_screen.dart # Tab 1: Kalkulator & Tracker Air (activity steppers, budget formulas)
 │       ├── aksi_screen.dart    # Tab 2: Aksi & Kebiasaan Air (checklist models, category filters)
 │       ├── edukasi_screen.dart # Tab 3: Edukasi & Target SDG 6 (modules, quizzes, XP tracker)
-│       └── profile_screen.dart # Profil Pengguna, Statistik SDG 6 & Pengaturan Aplikasi
+│       ├── profile_screen.dart # Profil Pengguna, Statistik SDG 6 & Pengaturan Aplikasi
+│       └── laporan_screen.dart # Laporan Konservasi Air (analitik periodik, grafik batang, sertifikat)
 ├── test/
 │   └── widget_test.dart       # Comprehensive widget smoke tests
 └── pubspec.yaml               # Flutter package configuration and registered assets
@@ -86,6 +87,8 @@ graph TD
     D -->|Avatar Tap| P
     E -->|Avatar Tap| P
     F -->|Avatar Tap| P
+    P -->|Laporan Saya| R[LaporanKonservasiAirScreen]
+    R -->|Kembali| P
     P -->|Keluar Sesi Demo| L
     L -->|Kembali| W
 
@@ -94,6 +97,7 @@ graph TD
     E -->|Toggle Item| E1[Dynamic Liter & Point Accumulation]
     F -->|Answer Quiz| F1[XP Reward & Answer Validation]
     P -->|Edit Profil / Ganti Satuan| P1[Stateful Conservation Summary & Settings]
+    R -->|Period Tabs & Rapor| R1[Dynamic Chart, Activity Split & Certification]
 ```
 
 1. **🧭 Root Navigation (`AquaGuardMainScaffold`):**
@@ -115,8 +119,16 @@ graph TD
 5. **👤 Profil Pengguna & Pengaturan Module (`profile_screen.dart`):**
    - Menampilkan kartu identitas relawan lengkap dengan lencana terverifikasi, peran Duta SDG 6, dan peringkat relawan yang dapat diedit langsung.
    - 4 Kartu Metrik Ringkasan Konservasi Air: Total Dihemat (+14% dari target), Rata-rata Harian (42 L/hari vs 35 L target), Streak Berturut (12 hari), dan Jejak Air (Kategori Efisien - Eco Hero).
+   - Akses cepat kartu **Laporan Saya** menuju analitik periodik mingguan & bulanan.
    - Kartu Poin & Lencana SDG 6 (850 Eco-Points, bilah progres interaktif 85%, dan carousel lencana).
    - Pengaturan interaktif dengan sakelar Pengingat Catat Air, Misi Komunitas, Mode Hemat Kuota, toggle segmented satuan (Liter vs Galon), pilihan bahasa, serta tombol konfirmasi Keluar Sesi Demo.
+
+6. **📊 Laporan Konservasi Air Module (`laporan_screen.dart`):**
+   - Menampilkan analitik periodik interaktif (Harian, Mingguan, Bulanan) dengan kalkulasi terkalibrasi konsisten: Total Mingguan 994 L, Rata-rata Harian 142 L/hari, dan Penghematan 266 L vs standar normal 180 L/hari.
+   - Grafik batang mingguan kustom dengan batas efisiensi mandiri 150 L/hari serta pembeda warna jelas untuk pemakaian normal vs melebihi target.
+   - Distribusi konsumsi air per aktivitas (Mandi 49%, Toilet 17%, Dapur 20%, Cuci 14%) dalam satu baris rapi tanpa teks terpotong.
+   - Kartu Sertifikat Konservasi dengan ikon medali (`Icons.workspace_premium_rounded`), ID verifikasi utuh, dan tombol full-width untuk membuka rapor konservasi lengkap.
+   - Aksi unduh laporan PDF mandiri, bagikan ke media sosial, serta penukaran poin konservasi.
 
 ---
 

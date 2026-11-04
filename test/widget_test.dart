@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:aquaguard/main.dart';
+import 'package:aquaguard/screens/laporan_screen.dart';
 import 'package:aquaguard/screens/login_screen.dart';
 import 'package:aquaguard/screens/profile_screen.dart';
 
@@ -323,6 +324,8 @@ void main() {
     expect(find.text('Efisien'), findsOneWidget);
 
     // Verify Points & Badges
+    expect(find.text('Laporan Saya'), findsOneWidget);
+    expect(find.text('Statistik mingguan & bulanan konservasi'), findsOneWidget);
     expect(find.text('Poin & Lencana SDG 6'), findsOneWidget);
     expect(find.text('850 Eco-Points'), findsOneWidget);
     expect(find.text('Menuju Master Konservasi'), findsOneWidget);
@@ -344,5 +347,73 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Tentang AquaGuard v1.4'), findsOneWidget);
     expect(find.text('Keluar Sesi Demo'), findsOneWidget);
+  });
+
+  testWidgets('AquaGuard Laporan Konservasi Air Screen Smoke Test',
+      (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(() => tester.view.resetPhysicalSize());
+
+    // Build LaporanKonservasiAirScreen
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: LaporanKonservasiAirScreen(),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // 1. Verify Top Bar & Period Tabs
+    expect(find.text('Laporan Air'), findsOneWidget);
+    expect(find.text('850 pts'), findsOneWidget);
+    expect(find.text('Harian'), findsOneWidget);
+    expect(find.text('Mingguan'), findsOneWidget);
+    expect(find.text('Bulanan'), findsOneWidget);
+
+    // 2. Verify Date and Scope
+    expect(find.text('17 - 23 Okt 2024'), findsOneWidget);
+    expect(find.text('Rumah / Kos Saya'), findsOneWidget);
+    expect(find.text('Catatan Mandiri'), findsOneWidget);
+
+    // 3. Verify Hero Card Details
+    expect(find.text('Penghematan Optimal!'), findsOneWidget);
+    expect(
+      find.text('Rata-rata 142 L/hari (38L lebih hemat dari standar 180L).'),
+      findsOneWidget,
+    );
+    expect(find.text('266 L (7 hari)'), findsOneWidget);
+    expect(find.text('Rp 18.500'), findsWidgets);
+
+    // 4. Verify 4 Quick Stat Cards
+    expect(find.text('Total Pemakaian'), findsOneWidget);
+    expect(find.text('994'), findsOneWidget);
+    expect(find.text('Air Diselamatkan'), findsOneWidget);
+    expect(find.text('266'), findsOneWidget);
+    expect(find.text('Eco-Points'), findsOneWidget);
+    expect(find.text('+120'), findsOneWidget);
+    expect(find.text('Hemat Bulanan'), findsOneWidget);
+    expect(find.text('1.420'), findsOneWidget);
+
+    // 5. Verify Weekly Chart & Legend
+    expect(find.text('Grafik Pemakaian Mingguan'), findsOneWidget);
+    expect(find.text('Kam: 112L (Paling Hemat)'), findsOneWidget);
+    expect(find.text('Di Bawah Batas Target'), findsOneWidget);
+    expect(find.text('Melebihi Target Harian (150 L)'), findsOneWidget);
+
+    // 6. Verify Activity Distribution (numbers and percentages in single line)
+    expect(find.text('Distribusi Berdasarkan Aktivitas'), findsOneWidget);
+    expect(find.text('49% (69 L)'), findsOneWidget);
+    expect(find.text('17% (24 L)'), findsOneWidget);
+    expect(find.text('20% (28 L)'), findsOneWidget);
+    expect(find.text('14% (20 L)'), findsOneWidget);
+
+    // 7. Verify Certificate Card & Full-Width Button
+    expect(find.text('Misi Hemat Air Bersih'), findsOneWidget);
+    expect(find.text('Sertifikat Konservasi Minggu Ke-4'), findsOneWidget);
+    expect(find.text('Buka Rapor Konservasi Lengkap'), findsOneWidget);
+
+    // 8. Verify Bottom Action Buttons
+    expect(find.text('Unduh Laporan Hemat Air (PDF)'), findsOneWidget);
+    expect(find.text('Bagikan Pencapaian ke Media Sosial'), findsOneWidget);
   });
 }
