@@ -44,3 +44,4 @@ app.*.map.json
 
 # Generated files
 lib/generated_plugin_registrant.dart
+*.apk
