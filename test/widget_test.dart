@@ -329,7 +329,6 @@ void main() {
     expect(find.text('Laporan Saya'), findsOneWidget);
     expect(find.text('Statistik mingguan & bulanan konservasi'), findsOneWidget);
     expect(find.text('Poin & Lencana SDG 6'), findsOneWidget);
-    expect(find.text('850 Eco-Points'), findsOneWidget);
     expect(find.text('Menuju Master Konservasi'), findsOneWidget);
     expect(find.text('850 / 1.000 Poin'), findsOneWidget);
 
@@ -455,25 +454,44 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // Verify Title & Sub-header
-    expect(find.text('Pusat Tukar Poin'), findsWidgets);
-    expect(find.text('AQUAGUARD SDG 6'), findsOneWidget);
+    // Verify Title & Sub-header (Hapus Duplikasi Judul)
+    expect(find.text('Pusat Tukar Poin'), findsOneWidget);
+    expect(
+      find.text('Tukarkan poin hemat airmu menjadi manfaat nyata'),
+      findsOneWidget,
+    );
+    expect(find.text('Kuponku (2)'), findsOneWidget);
     expect(find.text('Saldo Terkumpul'), findsOneWidget);
     expect(find.text('Riwayat Poin'), findsOneWidget);
     expect(find.text('Cara Dapat Poin'), findsOneWidget);
 
-    // Verify Categories
+    // Verify 5 Categories
     expect(find.text('Semua'), findsOneWidget);
+    expect(find.text('Tagihan & Rumah'), findsWidgets);
     expect(find.text('Voucher Kampus'), findsWidgets);
-    expect(find.text('Merchandise'), findsWidgets);
-    expect(find.text('Donasi Air'), findsWidgets);
-    expect(find.text('Aset Digital'), findsWidgets);
+    expect(find.text('Alat Hemat Air'), findsWidgets);
+    expect(find.text('Merch & Donasi'), findsWidgets);
 
-    // Verify Reward Items
+    // Verify Reward Items from categories
+    expect(find.text('Potongan Tagihan Air PDAM Rp15.000'), findsOneWidget);
     expect(find.text('Voucher Refill Air Kampus (5x)'), findsOneWidget);
-    expect(find.text('Diskon 25% Tumbler Stainless'), findsOneWidget);
-    expect(find.text('Pohon Resapan Air (Atas Nama Anda)'), findsOneWidget);
-    expect(find.text('Lencana Profil: Penjaga Mata Air'), findsOneWidget);
+    expect(find.text('Aerator Keran Hemat Air 50%'), findsOneWidget);
+    expect(find.text('Patungan Filter Air Desa Krisis Air'), findsOneWidget);
+
+    // Verify Inactive item (1200 points > 850 points saldo) shows "Kurang 350 Poin"
+    expect(find.text('Kurang 350 Poin'), findsOneWidget);
+
+    // Test Tapping 'Kuponku (2)' button
+    await tester.tap(find.text('Kuponku (2)'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Kupon & Voucher Saya'), findsOneWidget);
+    expect(find.text('2 Kupon Aktif'), findsOneWidget);
+    expect(find.text('AQ-REFILL-8821'), findsOneWidget);
+
+    // Close Kuponku sheet
+    await tester.tap(find.text('Tutup'));
+    await tester.pumpAndSettle();
 
     // Verify Impact Banner
     expect(find.text('Dampak Air Bersih Anda'), findsOneWidget);
