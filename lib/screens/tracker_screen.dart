@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../services/points_manager.dart';
 import 'profile_screen.dart';
 
@@ -50,8 +49,7 @@ class _KalkulatorTrackerAirScreenState
 
   // 3. Dapur & Masak
   int _dapurWashSessions = 3; // Counter (- 3 +)
-  bool _useBaskomCuci =
-      true; // Gunakan Baskom (10L/sesi) vs Mengalir (20L/sesi)
+  bool _useBaskomCuci = true; // Gunakan Baskom (10L/sesi) vs Mengalir (20L/sesi)
 
   // 4. Mencuci Pakaian
   int _cuciWeeklyLoads = 3; // 3x seminggu
@@ -62,10 +60,7 @@ class _KalkulatorTrackerAirScreenState
 
   // Hitung liter per aktivitas
   int get _literMandi {
-    return (_mandiDurationMinutes *
-            _mandiFrequencyPerDay *
-            _showerRateLitersPerMinute)
-        .round();
+    return (_mandiDurationMinutes * _mandiFrequencyPerDay * _showerRateLitersPerMinute).round();
   }
 
   int get _literToilet {
@@ -96,24 +91,17 @@ class _KalkulatorTrackerAirScreenState
   }
 
   // Persentase distribusi pemakaian
-  double get _pctMandi =>
-      _totalDailyLiters == 0 ? 0 : (_literMandi / _totalDailyLiters);
-  double get _pctToilet =>
-      _totalDailyLiters == 0 ? 0 : (_literToilet / _totalDailyLiters);
-  double get _pctDapur =>
-      _totalDailyLiters == 0 ? 0 : (_literDapur / _totalDailyLiters);
-  double get _pctCuci =>
-      _totalDailyLiters == 0 ? 0 : (_literCuci / _totalDailyLiters);
+  double get _pctMandi => _totalDailyLiters == 0 ? 0 : (_literMandi / _totalDailyLiters);
+  double get _pctToilet => _totalDailyLiters == 0 ? 0 : (_literToilet / _totalDailyLiters);
+  double get _pctDapur => _totalDailyLiters == 0 ? 0 : (_literDapur / _totalDailyLiters);
+  double get _pctCuci => _totalDailyLiters == 0 ? 0 : (_literCuci / _totalDailyLiters);
 
   // Estimasi Biaya (PDAM rata-rata ~Rp 10/Liter)
   int get _estimatedCostDaily => _totalDailyLiters * 10;
 
   // Potensi Penghematan Air (L/hari) secara dinamis per aktivitas
   int get _savingMandi => _mandiDurationMinutes > 5
-      ? ((_mandiDurationMinutes - 5) *
-                _mandiFrequencyPerDay *
-                _showerRateLitersPerMinute)
-            .round()
+      ? ((_mandiDurationMinutes - 5) * _mandiFrequencyPerDay * _showerRateLitersPerMinute).round()
       : 0;
   int get _savingToilet => !_isEcoFlush ? (_toiletFlushCount * 3) : 0;
   int get _savingDapur => !_useBaskomCuci ? (_dapurWashSessions * 10) : 0;
@@ -208,8 +196,8 @@ class _KalkulatorTrackerAirScreenState
           presetKey == 'eco'
               ? 'Preset Super Hemat (Eco) diterapkan.'
               : presetKey == 'default'
-              ? 'Preset Default Standar diterapkan.'
-              : 'Preset Keluarga Mandiri diterapkan.',
+                  ? 'Preset Default Standar diterapkan.'
+                  : 'Preset Keluarga Mandiri diterapkan.',
         ),
         action: SnackBarAction(
           label: 'BATAL',
@@ -316,10 +304,7 @@ class _KalkulatorTrackerAirScreenState
                         ),
                         Text(
                           'Total potensi efisiensi: ~$_potentialSavings Liter / hari (~Rp ${_formatNumber(_estimatedCostDaily)}/hari)',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF64748B),
-                          ),
+                          style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
                         ),
                       ],
                     ),
@@ -333,8 +318,7 @@ class _KalkulatorTrackerAirScreenState
                 saving: _savingMandi > 0
                     ? 'Hemat ~$_savingMandi Liter / hari'
                     : 'Sudah Optimal (≤ 5 Menit)',
-                description:
-                    'Memangkas durasi shower mengurangi 6L air per menit.',
+                description: 'Memangkas durasi shower mengurangi 6L air per menit.',
                 isOptimal: _savingMandi == 0,
               ),
               const SizedBox(height: 10),
@@ -354,8 +338,7 @@ class _KalkulatorTrackerAirScreenState
                 saving: _savingDapur > 0
                     ? 'Hemat ~$_savingDapur Liter / hari'
                     : 'Sudah Optimal (Metode Baskom)',
-                description:
-                    'Memangkas 50% debit air dibanding keran mengalir.',
+                description: 'Memangkas 50% debit air dibanding keran mengalir.',
                 isOptimal: _savingDapur == 0,
               ),
               const SizedBox(height: 20),
@@ -437,9 +420,7 @@ class _KalkulatorTrackerAirScreenState
         children: [
           Icon(
             isOptimal ? Icons.check_circle_rounded : icon,
-            color: isOptimal
-                ? const Color(0xFF16A34A)
-                : const Color(0xFF0284C7),
+            color: isOptimal ? const Color(0xFF16A34A) : const Color(0xFF0284C7),
             size: 20,
           ),
           const SizedBox(width: 10),
@@ -461,9 +442,7 @@ class _KalkulatorTrackerAirScreenState
                   style: TextStyle(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
-                    color: isOptimal
-                        ? const Color(0xFF15803D)
-                        : const Color(0xFF0284C7),
+                    color: isOptimal ? const Color(0xFF15803D) : const Color(0xFF0284C7),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -514,10 +493,7 @@ class _KalkulatorTrackerAirScreenState
             constraints: const BoxConstraints(maxWidth: 460),
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20.0,
-                vertical: 12.0,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -595,10 +571,7 @@ class _KalkulatorTrackerAirScreenState
                       color: const Color(0xFFE0F2FE),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(
-                      Icons.water_drop,
-                      color: Color(0xFF0284C7),
-                    ),
+                    child: const Icon(Icons.water_drop, color: Color(0xFF0284C7)),
                   ),
                 ),
               ),
@@ -689,7 +662,11 @@ class _KalkulatorTrackerAirScreenState
                   shape: BoxShape.circle,
                 ),
                 child: const Center(
-                  child: Icon(Icons.person, color: Colors.white, size: 20),
+                  child: Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
               ),
             ),
@@ -749,9 +726,7 @@ class _KalkulatorTrackerAirScreenState
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text(
-                    'Filter & Preferensi Satuan: Liter / Kapita / Hari',
-                  ),
+                  content: Text('Filter & Preferensi Satuan: Liter / Kapita / Hari'),
                   duration: Duration(seconds: 1),
                   behavior: SnackBarBehavior.floating,
                 ),
@@ -802,12 +777,8 @@ class _KalkulatorTrackerAirScreenState
                     _timeTabs[index],
                     style: TextStyle(
                       fontSize: 13,
-                      fontWeight: isSelected
-                          ? FontWeight.w800
-                          : FontWeight.w600,
-                      color: isSelected
-                          ? const Color(0xFF0F4C81)
-                          : const Color(0xFF64748B),
+                      fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                      color: isSelected ? const Color(0xFF0F4C81) : const Color(0xFF64748B),
                     ),
                   ),
                 ),
@@ -827,8 +798,8 @@ class _KalkulatorTrackerAirScreenState
     final String unitLabel = _selectedTimeTab == 0
         ? 'hari'
         : _selectedTimeTab == 1
-        ? 'minggu'
-        : 'bulan';
+            ? 'minggu'
+            : 'bulan';
 
     return Container(
       width: double.infinity,
@@ -1084,8 +1055,7 @@ class _KalkulatorTrackerAirScreenState
                 ),
                 _buildLegendDot(
                   color: const Color(0xFF0284C7),
-                  label:
-                      'Toilet ${(_pctToilet * 100).round()}% ($_literToilet L)',
+                  label: 'Toilet ${(_pctToilet * 100).round()}% ($_literToilet L)',
                 ),
                 _buildLegendDot(
                   color: const Color(0xFF38BDF8),
@@ -1206,11 +1176,7 @@ class _KalkulatorTrackerAirScreenState
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: const [
-                        Icon(
-                          Icons.undo_rounded,
-                          size: 14,
-                          color: Color(0xFF64748B),
-                        ),
+                        Icon(Icons.undo_rounded, size: 14, color: Color(0xFF64748B)),
                         SizedBox(width: 3),
                         Text(
                           'Undo',
@@ -1283,12 +1249,12 @@ class _KalkulatorTrackerAirScreenState
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF0F4C81) : Colors.white,
+          color: isSelected
+              ? const Color(0xFF0F4C81)
+              : Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected
-                ? const Color(0xFF0F4C81)
-                : const Color(0xFFE2E8F0),
+            color: isSelected ? const Color(0xFF0F4C81) : const Color(0xFFE2E8F0),
           ),
           boxShadow: isSelected
               ? [
@@ -1414,9 +1380,7 @@ class _KalkulatorTrackerAirScreenState
                     ),
                     child: Icon(
                       icon,
-                      color: isExpanded
-                          ? Colors.white
-                          : const Color(0xFF0284C7),
+                      color: isExpanded ? Colors.white : const Color(0xFF0284C7),
                       size: 20,
                     ),
                   ),
@@ -1500,8 +1464,7 @@ class _KalkulatorTrackerAirScreenState
       index: 0,
       icon: Icons.shower_outlined,
       title: 'Mandi & Kebersihan Diri',
-      summarySubtitle:
-          '${_mandiDurationMinutes.toInt()} mnt × ${_mandiFrequencyPerDay}x sehari',
+      summarySubtitle: '${_mandiDurationMinutes.toInt()} mnt × ${_mandiFrequencyPerDay}x sehari',
       liters: _literMandi,
       expandedContent: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1627,8 +1590,7 @@ class _KalkulatorTrackerAirScreenState
       index: 1,
       icon: Icons.wc_rounded,
       title: 'Sanitasi & Toilet Flush',
-      summarySubtitle:
-          '${_toiletFlushCount}x bilas • ${_isEcoFlush ? "Eco (6L)" : "Full (9L)"}',
+      summarySubtitle: '${_toiletFlushCount}x bilas • ${_isEcoFlush ? "Eco (6L)" : "Full (9L)"}',
       liters: _literToilet,
       expandedContent: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1743,8 +1705,7 @@ class _KalkulatorTrackerAirScreenState
       index: 2,
       icon: Icons.restaurant_rounded,
       title: 'Dapur & Masak',
-      summarySubtitle:
-          '${_dapurWashSessions}x cuci piring • ${_useBaskomCuci ? "Baskom" : "Keran Mengalir"}',
+      summarySubtitle: '${_dapurWashSessions}x cuci piring • ${_useBaskomCuci ? "Baskom" : "Keran Mengalir"}',
       liters: _literDapur,
       expandedContent: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1929,7 +1890,10 @@ class _KalkulatorTrackerAirScreenState
           const SizedBox(height: 8),
           Text(
             'Proporsi harian: $_literCuci Liter/hari (Mesin cuci front-load ~45L/beban)',
-            style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+            style: const TextStyle(
+              fontSize: 11,
+              color: Color(0xFF64748B),
+            ),
           ),
         ],
       ),
@@ -1973,12 +1937,8 @@ class _KalkulatorTrackerAirScreenState
                 leftLabel,
                 style: TextStyle(
                   fontSize: 11,
-                  fontWeight: isLeftSelected
-                      ? FontWeight.w800
-                      : FontWeight.w600,
-                  color: isLeftSelected
-                      ? const Color(0xFF0F4C81)
-                      : const Color(0xFF64748B),
+                  fontWeight: isLeftSelected ? FontWeight.w800 : FontWeight.w600,
+                  color: isLeftSelected ? const Color(0xFF0F4C81) : const Color(0xFF64748B),
                 ),
               ),
             ),
@@ -2003,12 +1963,8 @@ class _KalkulatorTrackerAirScreenState
                 rightLabel,
                 style: TextStyle(
                   fontSize: 11,
-                  fontWeight: !isLeftSelected
-                      ? FontWeight.w800
-                      : FontWeight.w600,
-                  color: !isLeftSelected
-                      ? const Color(0xFF0F4C81)
-                      : const Color(0xFF64748B),
+                  fontWeight: !isLeftSelected ? FontWeight.w800 : FontWeight.w600,
+                  color: !isLeftSelected ? const Color(0xFF0F4C81) : const Color(0xFF64748B),
                 ),
               ),
             ),
@@ -2165,9 +2121,7 @@ class _KalkulatorTrackerAirScreenState
           width: 30,
           height: 30,
           decoration: BoxDecoration(
-            color: isPrimary
-                ? const Color(0xFF0F4C81)
-                : const Color(0xFFE0F2FE),
+            color: isPrimary ? const Color(0xFF0F4C81) : const Color(0xFFE0F2FE),
             shape: BoxShape.circle,
           ),
           child: Center(
@@ -2197,7 +2151,9 @@ class _KalkulatorTrackerAirScreenState
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0xFFE2E8F0), width: 1.0)),
+        border: Border(
+          top: BorderSide(color: Color(0xFFE2E8F0), width: 1.0),
+        ),
       ),
       child: BottomNavigationBar(
         currentIndex: selectedIndex,
