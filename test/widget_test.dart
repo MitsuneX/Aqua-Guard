@@ -94,7 +94,7 @@ void main() {
     expect(find.text('Checklist Aksi Harian'), findsOneWidget);
     expect(find.text('Tutup Keran Saat Sikat Gigi'), findsOneWidget);
     expect(find.text('Kurangi Shower 2 Menit'), findsOneWidget);
-    expect(find.text('+ Tambah Aksi Mandiri'), findsOneWidget);
+    expect(find.text('Tambah Aksi Mandiri'), findsOneWidget);
   });
 
   testWidgets('AquaGuard Dashboard Smoke Test', (WidgetTester tester) async {
@@ -332,22 +332,37 @@ void main() {
     expect(find.text('Menuju Master Konservasi'), findsOneWidget);
     expect(find.text('850 / 1.000 Poin'), findsOneWidget);
 
-    // Verify Settings
-    expect(find.text('Pengaturan Aplikasi'), findsOneWidget);
-    expect(find.text('Pengingat Catat Air'), findsOneWidget);
-    expect(find.text('Misi Komunitas SDG 6'), findsOneWidget);
-    expect(find.text('Mode Hemat Kuota'), findsOneWidget);
-    expect(find.text('Satuan Pengukuran'), findsOneWidget);
-    expect(find.text('Liter (L)'), findsOneWidget);
-    expect(find.text('Galon (Gal)'), findsOneWidget);
+    // Verify Group 1: Preferensi Penggunaan Air
+    await tester.ensureVisible(find.text('Preferensi Penggunaan Air'));
+    await tester.pumpAndSettle();
+    expect(find.text('Preferensi Penggunaan Air'), findsOneWidget);
+    expect(find.text('Target Hemat Air Harian'), findsOneWidget);
+    expect(find.text('Panduan Takaran Catat'), findsOneWidget);
+    expect(find.text('Liter & ml'), findsOneWidget);
+    expect(find.text('Gelas & Gayung'), findsOneWidget);
     expect(find.text('Bahasa Aplikasi'), findsOneWidget);
     expect(find.text('Indonesia'), findsOneWidget);
 
-    // Verify About section & Logout button
-    await tester.ensureVisible(find.text('Keluar Sesi Demo'));
+    // Verify Group 2: Notifikasi & Pengingat
+    await tester.ensureVisible(find.text('Notifikasi & Pengingat'));
+    await tester.pumpAndSettle();
+    expect(find.text('Notifikasi & Pengingat'), findsOneWidget);
+    expect(find.text('Notifikasi Pengingat Harian'), findsOneWidget);
+    expect(find.text('Waktu Pengingat'), findsOneWidget);
+    expect(find.text('Peringatan Batas Kuota Air'), findsOneWidget);
+
+    // Verify Group 3: Bantuan & Informasi Aplikasi + Logout button
+    await tester.ensureVisible(find.text('Tentang AquaGuard v1.4'));
     await tester.pumpAndSettle();
     expect(find.text('Tentang AquaGuard v1.4'), findsOneWidget);
-    expect(find.text('Keluar Sesi Demo'), findsOneWidget);
+    expect(find.text('Pusat Bantuan & Masukan'), findsOneWidget);
+    expect(find.text('Cara Membaca Meteran & Takaran Air'), findsOneWidget);
+    expect(find.text('Kebijakan Privasi & Keamanan Data'), findsOneWidget);
+    expect(find.text('Kirim Masukan & Laporan Kendala'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Keluar Akun (Log Out)'));
+    await tester.pumpAndSettle();
+    expect(find.text('Keluar Akun (Log Out)'), findsOneWidget);
   });
 
   testWidgets('AquaGuard Laporan Konservasi Air Screen Smoke Test',

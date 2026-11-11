@@ -579,20 +579,24 @@ class _AksiKebiasaanAirScreenState extends State<AksiKebiasaanAirScreen> {
     );
   }
 
-  @override
+@override
   Widget build(BuildContext context) {
     final int completedCount = _actions.where((item) => item.isCompleted).length;
     final int totalCount = _actions.length;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F9FD),
+      // 7. Tombol FAB Melayang di Kanan Bawah (Tetap diam saat di-scroll)
+      floatingActionButton: _buildAddActionButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 460),
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+              // Padding bottom ditambah menjadi 88 agar kartu paling bawah tidak tertutup FAB
+              padding: const EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 88.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -618,11 +622,6 @@ class _AksiKebiasaanAirScreenState extends State<AksiKebiasaanAirScreen> {
 
                   // 6. Kartu Misi Kolektif SDG 6
                   _buildCollectiveMissionCard(),
-                  const SizedBox(height: 20),
-
-                  // 7. Tombol Aksi Tambah Mandiri (Floating-style button di atas nav)
-                  _buildAddActionButton(),
-                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -1676,40 +1675,27 @@ class _AksiKebiasaanAirScreenState extends State<AksiKebiasaanAirScreen> {
     );
   }
 
-  // 7. Tombol Melayang Tambah Aksi Mandiri (+ Tambah Aksi Mandiri)
+  // 7. Tombol Melayang Tambah Aksi Mandiri (FAB)
   Widget _buildAddActionButton() {
-    return Center(
-      child: GestureDetector(
-        onTap: _showAddCustomActionModal,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 13),
-          decoration: BoxDecoration(
-            color: const Color(0xFF0F4C81),
-            borderRadius: BorderRadius.circular(30),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF0F4C81).withValues(alpha: 0.32),
-                blurRadius: 14,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              Icon(Icons.add, color: Colors.white, size: 20),
-              SizedBox(width: 8),
-              Text(
-                '+ Tambah Aksi Mandiri',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.2,
-                ),
-              ),
-            ],
-          ),
+    return FloatingActionButton.extended(
+      onPressed: _showAddCustomActionModal,
+      backgroundColor: const Color(0xFF0F4C81),
+      elevation: 6,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
+      ),
+      icon: const Icon(
+        Icons.add,
+        color: Colors.white,
+        size: 20,
+      ),
+      label: const Text(
+        'Tambah Aksi Mandiri',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 13.5,
+          fontWeight: FontWeight.w800,
+          letterSpacing: -0.2,
         ),
       ),
     );
