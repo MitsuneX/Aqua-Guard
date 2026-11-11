@@ -379,15 +379,18 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // 1. Verify Top Bar & Period Tabs
+    // 1. Verify Top Bar & Period Tabs (Segmented Button Kata Benda: Hari, Minggu, Bulan)
     expect(find.text('Laporan Air'), findsOneWidget);
     expect(find.text('850 pts'), findsOneWidget);
-    expect(find.text('Harian'), findsOneWidget);
-    expect(find.text('Mingguan'), findsOneWidget);
-    expect(find.text('Bulanan'), findsOneWidget);
+    expect(find.text('Hari'), findsOneWidget);
+    expect(find.text('Minggu'), findsOneWidget);
+    expect(find.text('Bulan'), findsOneWidget);
 
-    // 2. Verify Date and Scope
-    expect(find.text('17 - 23 Okt 2024'), findsOneWidget);
+    // 2. Verify Interactive Period Selector Bar & Scope Metadata
+    expect(
+      find.text('Minggu Ke-4 • Okt 2026 (22 - 28 Okt)'),
+      findsOneWidget,
+    );
     expect(find.text('Rumah / Kos Saya'), findsOneWidget);
     expect(find.text('Catatan Mandiri'), findsOneWidget);
 
@@ -455,6 +458,49 @@ void main() {
     // Close preview modal
     await tester.tap(find.text('Tutup'));
     await tester.pumpAndSettle();
+
+    // 10. Verify Interactive Period Switching (Golden Rule #3 & #7)
+    // Scroll back to top
+    await tester.ensureVisible(find.text('Hari'));
+    await tester.pumpAndSettle();
+
+    // Switch to 'Hari'
+    await tester.tap(find.text('Hari'));
+    await tester.pumpAndSettle();
+    expect(find.text('Grafik Pemakaian Harian'), findsOneWidget);
+
+    // Switch to 'Bulan'
+    await tester.tap(find.text('Bulan'));
+    await tester.pumpAndSettle();
+    expect(find.text('Grafik Pemakaian Bulanan'), findsOneWidget);
+    expect(find.text('Oktober 2026'), findsOneWidget);
+
+    // Switch back to 'Minggu'
+    await tester.tap(find.text('Minggu'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Minggu Ke-4 • Okt 2026 (22 - 28 Okt)'),
+      findsOneWidget,
+    );
+    expect(find.text('994'), findsOneWidget);
+
+    // Test Previous Week Arrow (<)
+    await tester.tap(find.byTooltip('Periode Sebelumnya'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Minggu Ke-3 • Okt 2026 (15 - 21 Okt)'),
+      findsOneWidget,
+    );
+    expect(find.text('1030'), findsOneWidget);
+
+    // Test Next Week Arrow (>)
+    await tester.tap(find.byTooltip('Periode Berikutnya'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Minggu Ke-4 • Okt 2026 (22 - 28 Okt)'),
+      findsOneWidget,
+    );
+    expect(find.text('994'), findsOneWidget);
   });
 
   testWidgets('AquaGuard Shop Screen Smoke Test', (WidgetTester tester) async {
