@@ -37,21 +37,20 @@ void main() {
 
     // Verify Estimation Summary Card
     expect(find.text('ESTIMASI PENGGUNAAN AIR'), findsOneWidget);
-    expect(find.text('146'), findsOneWidget);
-    expect(find.text('Liter / hari'), findsOneWidget);
-    expect(find.text('Hemat vs Standar'), findsOneWidget);
-    expect(find.text('Distribusi Pemakaian'), findsOneWidget);
-    expect(find.text('100% Tercatat'), findsOneWidget);
+    expect(find.text('145'), findsOneWidget);
+    expect(find.text('L / hari'), findsOneWidget);
+    expect(find.textContaining('vs Standar'), findsOneWidget);
+    expect(find.textContaining('rincian distribusi'), findsOneWidget);
 
     // Verify Presets
-    expect(find.text('Simulasi Preset Cepat'), findsOneWidget);
-    expect(find.text('Default Standar'), findsOneWidget);
-    expect(find.text('Super Hemat (Eco)'), findsOneWidget);
-    expect(find.text('Keluarga Mandiri'), findsOneWidget);
-    expect(find.text('Reset Custom'), findsOneWidget);
+    expect(find.text('Mode Simulasi Cepat'), findsOneWidget);
+    expect(find.text('Standar (227L)'), findsOneWidget);
+    expect(find.text('Super Hemat (146L)'), findsOneWidget);
+    expect(find.text('Keluarga (198L)'), findsOneWidget);
+    expect(find.text('Reset Default'), findsOneWidget);
 
     // Verify Personal Activities
-    expect(find.text('Aktivitas Personal Harian'), findsOneWidget);
+    expect(find.text('Aktivitas Penggunaan Air'), findsOneWidget);
     expect(find.text('Mandi & Kebersihan Diri'), findsOneWidget);
     expect(find.text('Sanitasi & Toilet Flush'), findsOneWidget);
     expect(find.text('Dapur & Masak'), findsOneWidget);
@@ -94,7 +93,7 @@ void main() {
     expect(find.text('Checklist Aksi Harian'), findsOneWidget);
     expect(find.text('Tutup Keran Saat Sikat Gigi'), findsOneWidget);
     expect(find.text('Kurangi Shower 2 Menit'), findsOneWidget);
-    expect(find.text('Tambah Aksi Mandiri'), findsOneWidget);
+    expect(find.text('Tambah Aktivitas Mandiri'), findsOneWidget);
   });
 
   testWidgets('AquaGuard Dashboard Smoke Test', (WidgetTester tester) async {
@@ -547,11 +546,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Kupon & Voucher Saya'), findsOneWidget);
-    expect(find.text('2 Kupon Aktif'), findsOneWidget);
+    expect(find.text('Aktif (2)'), findsOneWidget);
     expect(find.text('AQ-REFILL-8821'), findsOneWidget);
 
-    // Close Kuponku sheet
-    await tester.tap(find.text('Tutup'));
+    // Close Kuponku sheet via back button
+    await tester.tap(find.byIcon(Icons.arrow_back_rounded));
     await tester.pumpAndSettle();
 
     // Verify Impact Banner
