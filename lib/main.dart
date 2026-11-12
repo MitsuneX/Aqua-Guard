@@ -263,16 +263,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }
     });
 
+    final String sourceLabel = source == "minum"
+        ? "Minum Air (+1 Gelas)"
+        : source == "shower"
+            ? "Mandi Singkat"
+            : "Cuci Tangan";
+    final String amountLabel = amount < 1
+        ? "$amount L (${(amount * 1000).toInt()} ml)"
+        : "${amount.toInt()} Liter";
+
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          'Tercatat: +${amount >= 1 ? "${amount.toInt()} L" : "${(amount * 1000).toInt()} ml"} untuk $source!',
+        content: Row(
+          children: [
+            const Icon(
+              Icons.check_circle_rounded,
+              color: Color(0xFF38BDF8),
+              size: 18,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Catat Cepat Berhasil: +$amountLabel ($sourceLabel)',
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
         ),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        backgroundColor: const Color(0xFF026AA2),
+        backgroundColor: const Color(0xFF0F3B5F),
       ),
     );
   }
@@ -347,12 +373,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   _buildLocationMonitoringCard(),
                   const SizedBox(height: 16),
 
-                  // 6. Micro-Insight Card (Tahukah Kamu?)
-                  _buildMicroInsightCard(),
+                  // 6. Education Card (Prioritas Utama: Modul Edukasi SDG 6)
+                  _buildEducationCard(),
                   const SizedBox(height: 16),
 
-                  // 7. Education Card (Placeholder Modul Edukasi)
-                  _buildEducationCard(),
+                  // 7. Micro-Insight Card (Prioritas Pendukung: Trivia Tahukah Kamu?)
+                  _buildMicroInsightCard(),
                   const SizedBox(height: 24),
                 ],
               ),
@@ -747,38 +773,89 @@ class _DashboardScreenState extends State<DashboardScreen> {
           const SizedBox(height: 16),
 
           // Bagian Catat Cepat (di dalam _buildWaterQuotaCard)
-          const Text(
-            '+ CATAT CEPAT',
-            style: TextStyle(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 1.0,
-              color: Color(0xFF475569),
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Expanded(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.bolt_rounded,
+                      size: 16,
+                      color: Color(0xFF0284C7),
+                    ),
+                    SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        'PINTASAN CATAT CEPAT',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.8,
+                          color: Color(0xFF0F3B5F),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE0F2FE),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  '1-Tap Langsung Masuk',
+                  style: TextStyle(
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF0284C7),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 10),
 
-          // Menggunakan Wrap agar tombol tidak terpotong ke samping pada layar mobile
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              _buildQuickLogButton(
-                icon: Icons.local_drink_outlined,
-                label: '+1 Gelas Air',
-                onTap: () => _addWater(0.25, 'minum'),
-              ),
-              _buildQuickLogButton(
-                icon: Icons.shower_outlined,
-                label: '+Mandi Singkat',
-                onTap: () => _addWater(15.0, 'shower'),
-              ),
-              _buildQuickLogButton(
-                icon: Icons.clean_hands_outlined,
-                label: '+Cuci Tangan',
-                onTap: () => _addWater(2.0, 'cuci'),
-              ),
-            ],
+          // Menggunakan LayoutBuilder & Wrap agar responsif dan tidak terpotong di layar HP kecil
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final double cardWidth = constraints.maxWidth >= 480
+                  ? (constraints.maxWidth - 16) / 3
+                  : constraints.maxWidth;
+
+              return Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _buildQuickLogButton(
+                    icon: Icons.local_drink_rounded,
+                    label: '+1 Gelas Air',
+                    subtext: 'Menambah 0.25 L (250 ml)',
+                    width: cardWidth,
+                    onTap: () => _addWater(0.25, 'minum'),
+                  ),
+                  _buildQuickLogButton(
+                    icon: Icons.shower_rounded,
+                    label: '+Mandi Singkat',
+                    subtext: 'Menambah 15 Liter',
+                    width: cardWidth,
+                    onTap: () => _addWater(15.0, 'shower'),
+                  ),
+                  _buildQuickLogButton(
+                    icon: Icons.clean_hands_rounded,
+                    label: '+Cuci Tangan',
+                    subtext: 'Menambah 2 Liter',
+                    width: cardWidth,
+                    onTap: () => _addWater(2.0, 'cuci'),
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -818,31 +895,85 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildQuickLogButton({
     required IconData icon,
     required String label,
+    required String subtext,
     required VoidCallback onTap,
+    double? width,
   }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+          width: width,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
           decoration: BoxDecoration(
-            color: const Color(0xFFEDF5FD),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFD8E9F9)),
+            color: const Color(0xFFF6F9FD),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFBAE6FD)),
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 16, color: const Color(0xFF0284C7)),
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE0F2FE),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Icon(icon, size: 20, color: const Color(0xFF0284C7)),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0F172A),
+                        height: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtext,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF0284C7),
+                        height: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(width: 6),
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF0F172A),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0284C7),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.add_rounded, size: 14, color: Colors.white),
+                    SizedBox(width: 2),
+                    Text(
+                      'Catat',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -1336,7 +1467,126 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // 6. Kartu Wawasan (Tahukah Kamu?)
+  // 6. Kartu Modul Edukasi Utama (Prioritas Utama Pembelajaran SDG 6)
+  Widget _buildEducationCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFEDF2F7)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0A0F172A),
+            blurRadius: 16,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            if (widget.onBottomNavTap != null) {
+              widget.onBottomNavTap!(3); // Navigasi ke Tab 3: Edukasi & Target SDG 6
+            }
+          },
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                // Ilustrasi Gelombang Air SDG 6
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Container(
+                    width: 64,
+                    height: 64,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xFFE0F2FE), Color(0xFFBAE6FD)],
+                      ),
+                    ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: const [
+                        Icon(Icons.waves, size: 40, color: Color(0x400284C7)),
+                        Icon(Icons.water, size: 30, color: Color(0xFF0284C7)),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+
+                // Teks Modul Edukasi
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE0F2FE),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: const Text(
+                          'MODUL UTAMA SDG 6',
+                          style: TextStyle(
+                            fontSize: 9.5,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF0284C7),
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      const Text(
+                        'Bersama Wujudkan Akses Sanitasi Bersih',
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF0F172A),
+                          height: 1.25,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Pelajari 8 indikator keberlanjutan SDG 6 di modul edukasi interaktif.',
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          color: Color(0xFF64748B),
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+
+                // Tombol Aksi ke Tab Edukasi
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFE0F2FE),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.arrow_forward_rounded,
+                    color: Color(0xFF0284C7),
+                    size: 20,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // 7. Kartu Wawasan Trivia Pelengkap (Tahukah Kamu?)
   Widget _buildMicroInsightCard() {
     return Container(
       decoration: BoxDecoration(
@@ -1397,7 +1647,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const SizedBox(height: 4),
                 RichText(
                   text: const TextSpan(
-                    text: 'Menutup keran saat menggosok gigi atau menyabuni tangan menghemat hingga ',
+                    text:
+                        'Menutup keran saat menggosok gigi atau menyabuni tangan menghemat hingga ',
                     style: TextStyle(
                       fontSize: 12,
                       color: Color(0xFF334155),
@@ -1412,101 +1663,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                       ),
                       TextSpan(
-                        text: ' per menit! Kebiasaan kecil ini melipatgandakan cadangan air komunal.',
+                        text:
+                            ' per menit! Kebiasaan kecil ini melipatgandakan cadangan air komunal.',
                       ),
                     ],
                   ),
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 7. Kartu Edukasi (Placeholder)
-  Widget _buildEducationCard() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFEDF2F7)),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0A0F172A),
-            blurRadius: 14,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(12),
-      child: Row(
-        children: [
-          // Placeholder Gambar Gelombang Air
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              width: 64,
-              height: 64,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0x99BAE6FD), Color(0x4D38BDF8)],
-                ),
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: const [
-                  Icon(Icons.waves, size: 40, color: Color(0x400284C7)),
-                  Icon(Icons.water, size: 32, color: Color(0xFF0284C7)),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-
-          // Teks Modul Edukasi
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  'Bersama Wujudkan Akses Sanitasi Bersih',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF0F172A),
-                    height: 1.25,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'Pelajari 8 indikator keberlanjutan SDG 6 di modul edukasi interaktif.',
-                  style: TextStyle(
-                    fontSize: 11.5,
-                    color: Color(0xFF64748B),
-                    height: 1.3,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-
-          // Tombol Panah Maju
-          Container(
-            width: 34,
-            height: 34,
-            decoration: const BoxDecoration(
-              color: Color(0xFFE0F2FE),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.chevron_right_rounded,
-              color: Color(0xFF0284C7),
-              size: 20,
             ),
           ),
         ],

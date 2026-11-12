@@ -119,6 +119,21 @@ void main() {
       find.text('Tantangan Hari Ini: Kurangi 2 Menit Mandi Shower'),
       findsOneWidget,
     );
+
+    // Verify Catat Cepat buttons & subtexts
+    expect(find.text('PINTASAN CATAT CEPAT'), findsOneWidget);
+    expect(find.text('+1 Gelas Air'), findsOneWidget);
+    expect(find.text('Menambah 0.25 L (250 ml)'), findsOneWidget);
+    expect(find.text('+Mandi Singkat'), findsOneWidget);
+    expect(find.text('Menambah 15 Liter'), findsOneWidget);
+    expect(find.text('+Cuci Tangan'), findsOneWidget);
+    expect(find.text('Menambah 2 Liter'), findsOneWidget);
+
+    // Verify Hierarki Kartu Bawah: Modul Edukasi Utama & Trivia Tahukah Kamu
+    expect(find.text('Bersama Wujudkan Akses Sanitasi Bersih'), findsOneWidget);
+    expect(find.text('MODUL UTAMA SDG 6'), findsOneWidget);
+    expect(find.text('TAHUKAH KAMU?'), findsOneWidget);
+    expect(find.text('Micro-Insight #42'), findsOneWidget);
   });
 
   testWidgets('AquaGuard Edukasi & Target SDG 6 Screen Smoke Test',
@@ -156,7 +171,7 @@ void main() {
 
     // Verify Modules Section
     expect(find.text('Bite-Sized Modul SDG 6'), findsOneWidget);
-    expect(find.text('Mikro-Sesi 2–3 Menit'), findsOneWidget);
+    expect(find.text('Ketuk Kartu untuk Detail'), findsOneWidget);
 
     // Verify module titles
     expect(find.text('Target 6.1: Air Minum Aman'), findsOneWidget);
@@ -166,7 +181,7 @@ void main() {
 
     // Verify Flow Diagram Section
     expect(
-      find.text('Diagram Alir Interaktif: Sanitasi Aman & Siklus Air'),
+      find.text('Diagram Alir Interaktif: Siklus Air'),
       findsOneWidget,
     );
     expect(find.text('Sumber Air Bersih'), findsOneWidget);

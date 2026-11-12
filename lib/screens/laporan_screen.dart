@@ -142,7 +142,8 @@ class _LaporanKonservasiAirScreenState
 
   // ── State Index Pilihan Periode ──
   int _selectedWeekIndex = 3; // Index 0..3 (Minggu Ke-1 s/d Ke-4 Okt 2026)
-  int _selectedMonthIndex = 2; // Index 0..3 (Agustus, September, Oktober, November 2026)
+  int _selectedMonthIndex =
+      2; // Index 0..3 (Agustus, September, Oktober, November 2026)
   int _selectedDayIndex = 3; // Index 0..3 (25, 26, 27, 28 Okt 2026)
 
   // Batas Efisiensi Target Pemakaian Harian (L/hari)
@@ -206,8 +207,7 @@ class _LaporanKonservasiAirScreenState
           'color': Color(0xFF94A3B8),
         },
       ],
-      smartInsight:
-          'Mulai pasang aerator keran untuk menurunkan debit air cucian tanpa mengurangi kenyamanan kucuran.',
+      smartInsight: 'Mulai pasang aerator keran untuk menurunkan debit air cucian tanpa mengurangi kenyamanan kucuran.',
     ),
 
     // Minggu Ke-2 (8 - 14 Okt 2026)
@@ -266,8 +266,7 @@ class _LaporanKonservasiAirScreenState
           'color': Color(0xFF94A3B8),
         },
       ],
-      smartInsight:
-          'Penggunaan baskom saat mencuci piring memangkas pemborosan air keran mengalir sebesar 15 Liter.',
+      smartInsight: 'Penggunaan baskom saat mencuci piring memangkas pemborosan air keran mengalir sebesar 15 Liter.',
     ),
 
     // Minggu Ke-3 (15 - 21 Okt 2026)
@@ -326,8 +325,7 @@ class _LaporanKonservasiAirScreenState
           'color': Color(0xFF94A3B8),
         },
       ],
-      smartInsight:
-          'Perbaikan keran wastafel yang bocor berhasil menghemat hingga 18 Liter air per hari!',
+      smartInsight: 'Perbaikan keran wastafel yang bocor berhasil menghemat hingga 18 Liter air per hari!',
     ),
 
     // Minggu Ke-4 (22 - 28 Okt 2026) - DEFAULT / TERBARU
@@ -386,8 +384,7 @@ class _LaporanKonservasiAirScreenState
           'color': Color(0xFF94A3B8),
         },
       ],
-      smartInsight:
-          'Mandi menyumbang efisiensi tertinggi minggu ini berkat pemangkasan durasi sebesar 2 menit!',
+      smartInsight: 'Mandi menyumbang efisiensi tertinggi minggu ini berkat pemangkasan durasi sebesar 2 menit!',
     ),
   ];
 
@@ -443,8 +440,7 @@ class _LaporanKonservasiAirScreenState
           'color': Color(0xFF94A3B8),
         },
       ],
-      smartInsight:
-          'Tren penggunaan air bulanan mulai menunjukkan penurunan berkat pembiasaan mematikan keran saat cuci piring.',
+      smartInsight: 'Tren penggunaan air bulanan mulai menunjukkan penurunan berkat pembiasaan mematikan keran saat cuci piring.',
     ),
 
     // September 2026
@@ -497,8 +493,7 @@ class _LaporanKonservasiAirScreenState
           'color': Color(0xFF94A3B8),
         },
       ],
-      smartInsight:
-          'Penghematan konsisten terjadi di seluruh pekan dengan peningkatan kepatuhan batas target harian hingga 85%.',
+      smartInsight: 'Penghematan konsisten terjadi di seluruh pekan dengan peningkatan kepatuhan batas target harian hingga 85%.',
     ),
 
     // Oktober 2026 (DEFAULT)
@@ -551,8 +546,7 @@ class _LaporanKonservasiAirScreenState
           'color': Color(0xFF94A3B8),
         },
       ],
-      smartInsight:
-          'Bulan terbaik sejauh ini! Penurunan rata-rata harian mencapai 14 L/hari dibanding bulan sebelumnya.',
+      smartInsight: 'Bulan terbaik sejauh ini! Penurunan rata-rata harian mencapai 14 L/hari dibanding bulan sebelumnya.',
     ),
 
     // November 2026
@@ -605,8 +599,7 @@ class _LaporanKonservasiAirScreenState
           'color': Color(0xFF94A3B8),
         },
       ],
-      smartInsight:
-          'Proyeksi penghematan sangat tinggi berkat kepatuhan konsisten dan penggunaan peralatan hemat air.',
+      smartInsight: 'Proyeksi penghematan sangat tinggi berkat kepatuhan konsisten dan penggunaan peralatan hemat air.',
     ),
   ];
 
@@ -664,8 +657,7 @@ class _LaporanKonservasiAirScreenState
           'color': Color(0xFF94A3B8),
         },
       ],
-      smartInsight:
-          'Aktivitas akhir pekan meningkatkan konsumsi air mandi dan mencuci pakaian.',
+      smartInsight: 'Aktivitas akhir pekan meningkatkan konsumsi air mandi dan mencuci pakaian.',
     ),
 
     // 26 Okt 2026
@@ -776,8 +768,7 @@ class _LaporanKonservasiAirScreenState
           'color': Color(0xFF94A3B8),
         },
       ],
-      smartInsight:
-          'Efisiensi tinggi berkat mandi shower cepat 4 menit dan penampungan air wudhu.',
+      smartInsight: 'Efisiensi tinggi berkat mandi shower cepat 4 menit dan penampungan air wudhu.',
     ),
 
     // 28 Okt 2026 (DEFAULT / HARI INI)
@@ -832,8 +823,7 @@ class _LaporanKonservasiAirScreenState
           'color': Color(0xFF94A3B8),
         },
       ],
-      smartInsight:
-          'Mandi menyumbang efisiensi tertinggi hari ini berkat pemangkasan durasi sebesar 2 menit!',
+      smartInsight: 'Mandi menyumbang efisiensi tertinggi hari ini berkat pemangkasan durasi sebesar 2 menit!',
     ),
   ];
 
@@ -1807,7 +1797,11 @@ class _LaporanKonservasiAirScreenState
         Row(
           mainAxisSize: MainAxisSize.min,
           children: const [
-            Icon(Icons.check_circle_rounded, size: 12, color: Color(0xFF16A34A)),
+            Icon(
+              Icons.check_circle_rounded,
+              size: 12,
+              color: Color(0xFF16A34A),
+            ),
             SizedBox(width: 4),
             Text(
               'Tersinkronisasi',
@@ -2476,8 +2470,7 @@ class _LaporanKonservasiAirScreenState
               children: _activeBars.map((bar) {
                 final int liters = bar['liters'] as int;
                 final bool exceeds = liters > _activeTargetLine;
-                final bool isBest =
-                    liters == (_activeBestBar['liters'] as int);
+                final bool isBest = liters == (_activeBestBar['liters'] as int);
                 final String day = bar['day'] as String;
 
                 final double barH = (liters / maxCapacity) * chartHeight;
@@ -2760,8 +2753,8 @@ class _LaporanKonservasiAirScreenState
     final String certSubtitle = _selectedPeriodType == 1
         ? 'Sertifikat Konservasi Minggu Ke-${_currentWeekly.weekNumber}'
         : (_selectedPeriodType == 2
-            ? 'Sertifikat Konservasi ${_currentMonthly.monthName}'
-            : 'Sertifikat Konservasi Harian (${_currentDaily.relativeLabel})');
+              ? 'Sertifikat Konservasi ${_currentMonthly.monthName}'
+              : 'Sertifikat Konservasi Harian (${_currentDaily.relativeLabel})');
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -3454,10 +3447,7 @@ class _LaporanKonservasiAirScreenState
                   'Estimasi Hemat Tagihan Air:',
                   _formatRupiah(_activeSavedRupiah),
                 ),
-                _buildRaporDetailRow(
-                  'Status Predikat:',
-                  _activeCategoryTitle,
-                ),
+                _buildRaporDetailRow('Status Predikat:', _activeCategoryTitle),
                 _buildRaporDetailRow(
                   'Kepatuhan Target SDG 6.4:',
                   '100% Memenuhi Standar',
@@ -3887,8 +3877,8 @@ class _LaporanKonservasiAirScreenState
     final String certSubtitle = _selectedPeriodType == 1
         ? 'Sertifikat Dampak Konservasi Air • Minggu Ke-${_currentWeekly.weekNumber}'
         : (_selectedPeriodType == 2
-            ? 'Sertifikat Dampak Konservasi Air • ${_currentMonthly.monthName}'
-            : 'Sertifikat Dampak Konservasi Air • ${_currentDaily.formattedDate}');
+              ? 'Sertifikat Dampak Konservasi Air • ${_currentMonthly.monthName}'
+              : 'Sertifikat Dampak Konservasi Air • ${_currentDaily.formattedDate}');
 
     return Container(
       decoration: BoxDecoration(
@@ -4615,8 +4605,8 @@ class _LaporanKonservasiAirScreenState
             builder: (context, constraints) {
               const dashWidth = 5.0;
               const dashSpace = 4.0;
-              final count =
-                  (constraints.maxWidth / (dashWidth + dashSpace)).floor();
+              final count = (constraints.maxWidth / (dashWidth + dashSpace))
+                  .floor();
               return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: List.generate(count, (_) {

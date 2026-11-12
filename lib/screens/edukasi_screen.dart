@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+
 import '../services/points_manager.dart';
 import 'profile_screen.dart';
 
 /// Halaman Mandiri "Edukasi & Target SDG 6" (Tab Edukasi) - AquaGuard
-/// Pure Mobile UI & Local State dengan StatefulWidget berbasis SDG 6.
+/// Telah direvisi dengan menerapkan 8 Golden Rules of Interface Design (Shneiderman).
 class EdukasiSdgScreen extends StatefulWidget {
   final VoidCallback? onNavigateToBeranda;
   final Function(int)? onBottomNavTap;
@@ -21,15 +22,26 @@ class EdukasiSdgScreen extends StatefulWidget {
 }
 
 class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
-  // --- State: Kuis Kilat ---
-  // null = belum dipilih, 0 = A, 1 = B, 2 = C
+  // --- State: Kuis Kilat (Rule 4, 5, 6: Error Prevention, Closure, Reversal) ---
   int? _selectedQuizAnswer;
   final int _correctAnswer = 1; // B adalah jawaban benar
   bool _quizSubmitted = false;
+  bool _quizRewardClaimed =
+      false; // Mencegah farming XP saat fitur "Coba Lagi" dipakai
+
+  // --- State: Unduh Panduan (Rule 3 & 5: Informative Feedback & Prevent Error) ---
+  bool _isDownloading = false;
+  double _downloadProgress = 0.0;
+  bool _isDownloaded = false;
+
+  // --- State: Diagram Alir Interaktif (Rule 3 & 7: Feedback & Locus of Control) ---
+  int? _selectedFlowIndex;
+
+  // --- State: Modul yang di-expand ---
+  int? _expandedModuleId = 2; // Default expand modul yang sedang 'active'
 
   // --- State: Modul Progress ---
-  // Status modul: 'done', 'active', 'available', 'locked'
-  final List<Map<String, dynamic>> _modules = [
+  final List _modules = [
     {
       'id': 1,
       'target': 'Target 6.1',
@@ -42,12 +54,15 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
       'icon': Icons.check_circle_rounded,
       'iconColor': 0xFF059669,
       'iconBg': 0xFFDCFCE7,
-      'description':
-          'Mengerti parameter kelayakan konsumsi, uji TDS sederhana, & teknologi filtrasi mikron rumah tangga.',
+      'description': 'Mengerti parameter kelayakan konsumsi, uji TDS sederhana, & teknologi filtrasi mikron rumah tangga.',
+      'keyPoints': [
+        'Air layak minum harus tidak berwarna, tidak berbau, dan TDS < 300 ppm.',
+        'Filtrasi RO & Ultrafiltrasi efektif menyaring bakteri E. coli.',
+      ],
       'action': 'Ulas Catatan Ringkas',
       'progress': 1.0,
-      'step': null,
-      'totalStep': null,
+      'step': 3,
+      'totalStep': 3,
       'quizCount': null,
     },
     {
@@ -62,9 +77,13 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
       'icon': Icons.play_circle_outline_rounded,
       'iconColor': 0xFF0284C7,
       'iconBg': 0xFFE0F2FE,
-      'description':
-          'Pemberantasan BABS (Buang Air Besar Sembarangan) & penyediaan fasilitas sanitasi inklusif bagi wanita dan anak.',
-      'action': 'Lanjutkan Modul',
+      'description': 'Pemberantasan BABS (Buang Air Besar Sembarangan) & penyediaan fasilitas sanitasi inklusif bagi wanita dan anak.',
+      'keyPoints': [
+        'Langkah 1-3: Standar tangki septik kedap air (SNI) agar tidak mencemari sumur.',
+        'Langkah 4: Manajemen kebersihan menstruasi (MKM) di fasilitas umum/kampus.',
+        'Langkah 5: Cuci tangan pakai sabun (CTPS) pada 5 waktu kritis.',
+      ],
+      'action': 'Lanjutkan Langkah',
       'progress': 0.6,
       'step': 3,
       'totalStep': 5,
@@ -82,19 +101,22 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
       'icon': Icons.lock_open_rounded,
       'iconColor': 0xFF7C3AED,
       'iconBg': 0xFFEDE9FE,
-      'description':
-          'Menghitung jejak air virtual dalam pangan serta pemetaan krisis defisit air regional di Indonesia.',
+      'description': 'Menghitung jejak air virtual dalam pangan serta pemetaan krisis defisit air regional di Indonesia.',
+      'keyPoints': [
+        'Jejak air (Water Footprint) 1 cangkir kopi setara dengan ~140 liter air.',
+        'Penerapan keran aerator di kampus mampu menghemat debit air hingga 40%.',
+      ],
       'action': 'Mulai Pembelajaran',
       'progress': 0.0,
-      'step': null,
-      'totalStep': null,
+      'step': 0,
+      'totalStep': 3,
       'quizCount': 2,
     },
     {
       'id': 4,
       'target': 'Target 6.3',
       'title': 'Pengolahan Air Limbah',
-      'duration': null,
+      'duration': '4 Menit',
       'status': 'locked',
       'badge': 'Terkunci',
       'badgeColor': 0xFF94A3B8,
@@ -102,28 +124,30 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
       'icon': Icons.lock_rounded,
       'iconColor': 0xFF94A3B8,
       'iconBg': 0xFFF1F5F9,
-      'description': 'Buka setelah Target 6.4 selesai',
-      'action': null,
+      'description': 'Reduksi polusi kimiawi, daur ulang greywater domestik, dan teknologi phytoremediation.',
+      'keyPoints': [
+        'Pemisahan saluran blackwater (kloset) dan greywater (cucian/mandi).',
+        'Pemanfaatan tanaman air (eceng gondok/melati air) sebagai biofilter alami.',
+      ],
+      'action': 'Mulai Pembelajaran',
       'progress': 0.0,
-      'step': null,
-      'totalStep': null,
+      'step': 0,
+      'totalStep': 4,
       'quizCount': null,
     },
   ];
 
-  // --- State: Modul yang di-expand ---
-  int? _expandedModuleId;
-
   int get _completedModules =>
       _modules.where((m) => m['status'] == 'done').length;
-  int get _totalModules => _modules.length + 2; // total 6 modul (4 + 2 mendatang)
+  int get _totalModules => _modules.length;
 
   // --- Diagram Alir Steps ---
-  final List<Map<String, dynamic>> _flowSteps = [
+  final List _flowSteps = [
     {
       'step': '01',
       'title': 'Sumber Air Bersih',
       'subtitle': 'Mata air, waduk, & sumur terlindung',
+      'detail': 'Perlindungan daerah tangkapan air (catchment area) mencegah kontaminasi logam berat dan bakteri patogen sejak dari hulu.',
       'icon': Icons.water_outlined,
       'color': 0xFF0F4C81,
       'bgColor': 0xFFDEEBF7,
@@ -132,6 +156,7 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
       'step': '02',
       'title': 'Penggunaan Domestik',
       'subtitle': 'Konsumsi higienis & dapur ramah air',
+      'detail': 'Penggunaan deterjen ramah lingkungan (biodegradable) dan penghematan keran menekan beban polutan pada saluran pembuangan.',
       'icon': Icons.home_outlined,
       'color': 0xFF0284C7,
       'bgColor': 0xFFE0F2FE,
@@ -140,6 +165,7 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
       'step': '03',
       'title': 'Filtrasi / IPAL Komunal',
       'subtitle': 'Penyaringan greywater terintegrasi',
+      'detail': 'Instalasi Pengolahan Air Limbah (IPAL) menyaring lemak, sabun, dan partikel organik sebelum air dikembalikan ke alam.',
       'icon': Icons.filter_alt_outlined,
       'color': 0xFF0891B2,
       'bgColor': 0xFFCFFAFE,
@@ -148,6 +174,7 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
       'step': '04',
       'title': 'Daur Ulang Resapan',
       'subtitle': 'Biopori tanah & irigasi vegetasi',
+      'detail': 'Air hasil olahan IPAL aman digunakan untuk menyiram taman kampus dan mengisi ulang cadangan air tanah melalui lubang biopori.',
       'icon': Icons.recycling_rounded,
       'color': 0xFF059669,
       'bgColor': 0xFFD1FAE5,
@@ -155,41 +182,81 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
   ];
 
   // --- Quiz Options ---
-  final List<Map<String, dynamic>> _quizOptions = [
+  final List _quizOptions = [
     {
       'label': 'A',
       'text': 'Sekitar ~5 Liter per hari',
+      'feedback': 'Kurang tepat. Tetesan konstan selama 24 jam menghasilkan volume yang jauh lebih besar.',
     },
     {
       'label': 'B',
       'text': 'Sekitar ~20 Liter per hari',
-      'hint': 'Tepat! Lebih dari 20L air terbuang sia-sia per hari',
+      'feedback': 'Tepat! Lebih dari 20L air bersih terbuang sia-sia per hari (setara ~1 galon penuh).',
     },
     {
       'label': 'C',
       'text': 'Sekitar ~50 Liter per hari',
+      'feedback': 'Terlalu besar untuk 1 tetes/detik, namun kebocoran aliran kecil bisa mencapai angka ini.',
     },
   ];
 
-  void _selectQuizAnswer(int index) {
+  // ─────────────────────────────────────────────────
+  // Logic & Handlers (Golden Rules Implementation)
+  // ─────────────────────────────────────────────────
+
+  // Rule 5: Prevent Errors (Pilih dulu, baru konfirmasi submit)
+  void _onSelectOption(int index) {
     if (_quizSubmitted) return;
     setState(() {
       _selectedQuizAnswer = index;
+    });
+  }
+
+  // Rule 4: Design Dialogs to Yield Closure
+  void _submitQuizAnswer() {
+    if (_selectedQuizAnswer == null || _quizSubmitted) return;
+
+    setState(() {
       _quizSubmitted = true;
     });
 
-    if (index == _correctAnswer) {
+    if (_selectedQuizAnswer == _correctAnswer && !_quizRewardClaimed) {
+      _quizRewardClaimed = true;
       EcoPointsManager().addPoints(
         15,
         'Kuis Kilat: Keran Bocor Menetes',
         category: 'kuis',
       );
+      _showFeedbackSnackBar(
+        'Jawaban Benar! +15 Eco-Points berhasil ditambahkan.',
+        const Color(0xFF059669),
+      );
+    } else if (_selectedQuizAnswer != _correctAnswer) {
+      _showFeedbackSnackBar(
+        'Jawaban kurang tepat. Silakan baca pembahasan atau coba lagi!',
+        const Color(0xFFDC2626),
+      );
     }
   }
 
-  void _handleModuleAction(Map<String, dynamic> module) {
-    final status = module['status'] as String;
-    if (status == 'locked') return;
+  // Rule 6: Permit Easy Reversal of Actions
+  void _resetQuiz() {
+    setState(() {
+      _selectedQuizAnswer = null;
+      _quizSubmitted = false;
+    });
+  }
+
+  // Rule 3: Offer Informative Feedback & Rule 7: Locus of Control
+  void _toggleExpandModule(Map<String, dynamic> module) {
+    final String status = module['status'] as String;
+    if (status == 'locked') {
+      _showFeedbackSnackBar(
+        'Selesaikan modul "Target 6.4: Efisiensi & Kelangkaan Air" terlebih dahulu untuk membuka modul ini.',
+        const Color(0xFF64748B),
+      );
+      return;
+    }
 
     setState(() {
       if (_expandedModuleId == module['id']) {
@@ -198,35 +265,188 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
         _expandedModuleId = module['id'] as int;
       }
     });
+  }
 
-    final String msg = status == 'done'
-        ? 'Membuka catatan ringkas "${module['title']}"...'
-        : status == 'active'
-            ? 'Melanjutkan modul "${module['title']}" dari Langkah ${module['step']} dari ${module['totalStep']}...'
-            : 'Memulai pembelajaran "${module['title']}"...';
+  // Rule 4 & 6: Closure pada Modul + Easy Reversal (Undo)
+  void _advanceModuleStep(
+    Map<String, dynamic> module, {
+    bool instantComplete = false,
+  }) {
+    // Simpan state lama untuk keperluan Undo (Rule 6)
+    final String oldStatus = module['status'] as String;
+    final int oldStep = (module['step'] as int?) ?? 0;
+    final double oldProgress = (module['progress'] as double?) ?? 0.0;
+    final String? oldDuration = module['duration'] as String?;
+    final String oldBadge = module['badge'] as String;
+    final int oldBadgeColor = module['badgeColor'] as int;
+    final int oldBadgeBg = module['badgeBg'] as int;
+    final IconData oldIcon = module['icon'] as IconData;
+    final String? oldAction = module['action'] as String?;
+
+    final int totalStep = (module['totalStep'] as int?) ?? 3;
+    int nextStep = instantComplete ? totalStep : oldStep + 1;
+
+    if (oldStatus == 'done') {
+      // Opsi mengulang modul jika sudah selesai (Rule 6)
+      setState(() {
+        module['status'] = 'active';
+        module['step'] = 1;
+        module['progress'] = 1 / totalStep;
+        module['badge'] = 'Berjalan';
+        module['badgeColor'] = 0xFF0284C7;
+        module['badgeBg'] = 0xFFE0F2FE;
+        module['icon'] = Icons.play_circle_outline_rounded;
+        module['iconColor'] = 0xFF0284C7;
+        module['iconBg'] = 0xFFE0F2FE;
+        module['duration'] = 'Progres ${(100 / totalStep).round()}%';
+        module['action'] = 'Lanjutkan Langkah';
+        _expandedModuleId = module['id'] as int;
+      });
+      _showFeedbackSnackBar(
+        'Mengulang modul "${module['title']}" dari Langkah 1.',
+        const Color(0xFF0284C7),
+      );
+      return;
+    }
+
+    setState(() {
+      _expandedModuleId = module['id'] as int;
+      if (nextStep >= totalStep) {
+        // Modul Selesai (Closure)
+        module['status'] = 'done';
+        module['step'] = totalStep;
+        module['progress'] = 1.0;
+        module['badge'] = 'Selesai';
+        module['badgeColor'] = 0xFF059669;
+        module['badgeBg'] = 0xFFDCFCE7;
+        module['icon'] = Icons.check_circle_rounded;
+        module['iconColor'] = 0xFF059669;
+        module['iconBg'] = 0xFFDCFCE7;
+        module['duration'] = 'Selesai Dipelajari';
+        module['action'] = 'Ulangi Modul';
+
+        // Unlock Target 6.3 jika Target 6.4 selesai
+        if (module['id'] == 3) {
+          final lockedMod = _modules.firstWhere((m) => m['id'] == 4);
+          if (lockedMod['status'] == 'locked') {
+            lockedMod['status'] = 'available';
+            lockedMod['badge'] = 'Tersedia';
+            lockedMod['badgeColor'] = 0xFF7C3AED;
+            lockedMod['badgeBg'] = 0xFFEDE9FE;
+            lockedMod['icon'] = Icons.lock_open_rounded;
+            lockedMod['iconColor'] = 0xFF7C3AED;
+            lockedMod['iconBg'] = 0xFFEDE9FE;
+          }
+        }
+      } else {
+        // Modul Berjalan
+        final double newPct = nextStep / totalStep;
+        module['status'] = 'active';
+        module['step'] = nextStep;
+        module['progress'] = newPct;
+        module['badge'] = 'Berjalan';
+        module['badgeColor'] = 0xFF0284C7;
+        module['badgeBg'] = 0xFFE0F2FE;
+        module['icon'] = Icons.play_circle_outline_rounded;
+        module['iconColor'] = 0xFF0284C7;
+        module['iconBg'] = 0xFFE0F2FE;
+        module['duration'] = 'Progres ${(newPct * 100).round()}%';
+        module['action'] = 'Lanjutkan Langkah';
+      }
+    });
+
+    final bool justFinished = module['status'] == 'done';
+    if (justFinished) {
+      EcoPointsManager().addPoints(
+        25,
+        'Menyelesaikan Modul ${module['target']}',
+        category: 'edukasi',
+      );
+    }
 
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg),
-        duration: const Duration(seconds: 2),
+        content: Text(
+          justFinished
+              ? 'Selamat! Modul "${module['title']}" selesai (+25 XP).'
+              : 'Melanjutkan ke Langkah $nextStep dari $totalStep...',
+        ),
+        duration: const Duration(seconds: 3),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         backgroundColor: Color(module['badgeColor'] as int),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        // Rule 6: Permit Easy Reversal (Tombol Batal/Undo)
+        action: SnackBarAction(
+          label: 'BATAL',
+          textColor: Colors.white,
+          onPressed: () {
+            setState(() {
+              module['status'] = oldStatus;
+              module['step'] = oldStep;
+              module['progress'] = oldProgress;
+              module['duration'] = oldDuration;
+              module['badge'] = oldBadge;
+              module['badgeColor'] = oldBadgeColor;
+              module['badgeBg'] = oldBadgeBg;
+              module['icon'] = oldIcon;
+              module['iconColor'] = oldBadgeColor;
+              module['iconBg'] = oldBadgeBg;
+              module['action'] = oldAction;
+            });
+          },
+        ),
       ),
     );
   }
 
-  void _handleDownload() {
+  // Rule 3, 4, 5: Feedback progres unduhan, Closure selesai, & Cegah double click
+  Future<void> _handleDownload() async {
+    if (_isDownloading) return;
+
+    if (_isDownloaded) {
+      _showFeedbackSnackBar(
+        'Membuka kembali "Lembar Panduan SDG 6 Kampus.pdf"...',
+        const Color(0xFF0284C7),
+      );
+      return;
+    }
+
+    setState(() {
+      _isDownloading = true;
+      _downloadProgress = 0.25;
+    });
+
+    await Future.delayed(const Duration(milliseconds: 350));
+    if (!mounted) return;
+    setState(() => _downloadProgress = 0.65);
+
+    await Future.delayed(const Duration(milliseconds: 350));
+    if (!mounted) return;
+    setState(() => _downloadProgress = 1.0);
+
+    await Future.delayed(const Duration(milliseconds: 200));
+    if (!mounted) return;
+    setState(() {
+      _isDownloading = false;
+      _isDownloaded = true;
+    });
+
+    _showFeedbackSnackBar(
+      'Unduhan selesai! "Lembar Panduan SDG 6 Kampus (PDF 2.4 MB)" tersimpan.',
+      const Color(0xFF059669),
+    );
+  }
+
+  void _showFeedbackSnackBar(String message, Color bgColor) {
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Mengunduh "Lembar Panduan SDG 6 Kampus (PDF 2.4 MB)"... ✅',
-        ),
-        duration: Duration(seconds: 2),
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: Color(0xFF0F4C81),
+        backgroundColor: bgColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
@@ -239,45 +459,59 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 460),
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 1. Header AppBar
-                  _buildTopAppBar(),
-                  const SizedBox(height: 18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 1. Header AppBar (Tetap diam di atas saat di-scroll)
+                Container(
+                  color: const Color(0xFFF8FAFC),
+                  padding: const EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 12.0),
+                  child: _buildTopAppBar(),
+                ),
 
-                  // 2. Judul & XP Badge
-                  _buildPageTitleSection(),
-                  const SizedBox(height: 14),
+                // Sisa konten di bawah header yang dapat di-scroll
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                      vertical: 6.0,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // 2. Judul & XP Badge
+                        _buildPageTitleSection(),
+                        const SizedBox(height: 14),
 
-                  // 3. Progres Modul
-                  _buildModuleProgressBar(),
-                  const SizedBox(height: 18),
+                        // 3. Progres Modul
+                        _buildModuleProgressBar(),
+                        const SizedBox(height: 18),
 
-                  // 4. Banner Misi Global
-                  _buildGlobalMissionBanner(),
-                  const SizedBox(height: 22),
+                        // 4. Banner Misi Global
+                        _buildGlobalMissionBanner(),
+                        const SizedBox(height: 22),
 
-                  // 5. Bite-Sized Modul SDG 6
-                  _buildModuleListSection(),
-                  const SizedBox(height: 22),
+                        // 5. Bite-Sized Modul SDG 6
+                        _buildModuleListSection(),
+                        const SizedBox(height: 22),
 
-                  // 6. Diagram Alir Interaktif
-                  _buildFlowDiagramSection(),
-                  const SizedBox(height: 22),
+                        // 6. Diagram Alir Interaktif
+                        _buildFlowDiagramSection(),
+                        const SizedBox(height: 22),
 
-                  // 7. Tantangan Kuis Kilat
-                  _buildQuizSection(),
-                  const SizedBox(height: 22),
+                        // 7. Tantangan Kuis Kilat
+                        _buildQuizSection(),
+                        const SizedBox(height: 22),
 
-                  // 8. Kartu Unduh Panduan
-                  _buildDownloadGuideCard(),
-                  const SizedBox(height: 20),
-                ],
-              ),
+                        // 8. Kartu Unduh Panduan
+                        _buildDownloadGuideCard(),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -287,7 +521,7 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
   }
 
   // ─────────────────────────────────────────────────
-  // 1. Top App Bar
+  // 1. Top App Bar (Rule 2: Universal Usability dengan Tooltip & Semantics)
   // ─────────────────────────────────────────────────
   Widget _buildTopAppBar() {
     return Row(
@@ -334,7 +568,8 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
-                    GestureDetector(
+                    InkWell(
+                      borderRadius: BorderRadius.circular(4),
                       onTap: () {
                         if (widget.onNavigateToBeranda != null) {
                           widget.onNavigateToBeranda!();
@@ -342,12 +577,34 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                           widget.onBottomNavTap!(0);
                         }
                       },
-                      child: const Text(
-                        'Edukasi',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF64748B),
+                      child: const FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Beranda',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF64748B),
+                              ),
+                            ),
+                            Icon(
+                              Icons.chevron_right_rounded,
+                              size: 13,
+                              color: Color(0xFF94A3B8),
+                            ),
+                            Text(
+                              'Edukasi',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF0284C7),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -361,10 +618,8 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Pill Eco-Points Reaktif (💧 850 pts) -> Tekan untuk masuk Shop (Sesuai Gambar 3)
             const EcoPointsPillWidget(),
             const SizedBox(width: 6),
-
             Container(
               width: 36,
               height: 36,
@@ -374,6 +629,7 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                 border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
               child: IconButton(
+                tooltip: 'Notifikasi Pembelajaran',
                 icon: const Icon(
                   Icons.notifications_none_rounded,
                   color: Color(0xFF1E293B),
@@ -381,31 +637,36 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                 ),
                 padding: EdgeInsets.zero,
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('1 notifikasi baru: Kuis Kilat tersedia!'),
-                      duration: Duration(seconds: 1),
-                      behavior: SnackBarBehavior.floating,
-                    ),
+                  _showFeedbackSnackBar(
+                    'Info: Selesaikan Target 6.2 & Kuis Kilat untuk tambahan +40 XP hari ini!',
+                    const Color(0xFF0F3B5F),
                   );
                 },
               ),
             ),
             const SizedBox(width: 6),
-            GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ProfileScreen()),
-              ),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF0F3B5F),
-                  shape: BoxShape.circle,
-                ),
-                child: const Center(
-                  child: Icon(Icons.person, color: Colors.white, size: 20),
+            Semantics(
+              label: 'Buka Halaman Profil Pengguna',
+              button: true,
+              child: Tooltip(
+                message: 'Profil Saya',
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                  ),
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF0F3B5F),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Center(
+                      child: Icon(Icons.person, color: Colors.white, size: 20),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -422,10 +683,10 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
+        const Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               Text(
                 'Edukasi & Target SDG 6',
                 style: TextStyle(
@@ -449,35 +710,37 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
           ),
         ),
         const SizedBox(width: 10),
-        // XP Badge
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFFF7ED),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFFED7AA)),
-          ),
-          child: Column(
-            children: const [
-              Text(
-                '+120',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: Color(0xFFEA580C),
-                  height: 1.1,
+        Tooltip(
+          message: 'Total potensi XP dari seluruh modul & kuis di halaman ini',
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF7ED),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFFED7AA)),
+            ),
+            child: const Column(
+              children: [
+                Text(
+                  '+120',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFFEA580C),
+                    height: 1.1,
+                  ),
                 ),
-              ),
-              Text(
-                'XP',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFFF97316),
-                  letterSpacing: 0.5,
+                Text(
+                  'XP',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFFF97316),
+                    letterSpacing: 0.5,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
@@ -485,7 +748,7 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
   }
 
   // ─────────────────────────────────────────────────
-  // 3. Progres Modul Bar
+  // 3. Progres Modul Bar (Rule 3 & 8: Informative Feedback & Memory Load)
   // ─────────────────────────────────────────────────
   Widget _buildModuleProgressBar() {
     final double progress = _completedModules / _totalModules;
@@ -581,11 +844,7 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF0C3B6E),
-            Color(0xFF0369A1),
-            Color(0xFF0EA5E9),
-          ],
+          colors: [Color(0xFF0C3B6E), Color(0xFF0369A1), Color(0xFF0EA5E9)],
           stops: [0.0, 0.55, 1.0],
         ),
         boxShadow: [
@@ -599,7 +858,6 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
       clipBehavior: Clip.antiAlias,
       child: Stack(
         children: [
-          // Dekorasi lingkaran latar belakang
           Positioned(
             right: -30,
             bottom: -30,
@@ -624,7 +882,6 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
               ),
             ),
           ),
-          // Pola gelombang air abstrak
           Positioned(
             left: 0,
             right: 0,
@@ -634,13 +891,11 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
               painter: _WavePainter(),
             ),
           ),
-          // Konten utama
           Padding(
             padding: const EdgeInsets.all(18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Label Misi Global
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
@@ -656,11 +911,7 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.public_rounded,
-                        color: Colors.white,
-                        size: 12,
-                      ),
+                      Icon(Icons.public_rounded, color: Colors.white, size: 12),
                       SizedBox(width: 5),
                       Text(
                         'MISI GLOBAL 2030',
@@ -675,7 +926,6 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                // Judul utama banner
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -710,7 +960,6 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                   ],
                 ),
                 const Spacer(),
-                // Sub info
                 Wrap(
                   spacing: 8,
                   runSpacing: 4,
@@ -753,15 +1002,15 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
   }
 
   // ─────────────────────────────────────────────────
-  // 5. Bite-Sized Modul SDG 6 Section
+  // 5. Bite-Sized Modul SDG 6 Section (Rule 2, 3, 4, 6, 7, 8)
   // ─────────────────────────────────────────────────
   Widget _buildModuleListSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
+          children: [
             Expanded(
               child: Text(
                 'Bite-Sized Modul SDG 6',
@@ -776,7 +1025,7 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
             ),
             SizedBox(width: 8),
             Text(
-              'Mikro-Sesi 2–3 Menit',
+              'Ketuk Kartu untuk Detail',
               style: TextStyle(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w600,
@@ -810,21 +1059,19 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
     final Color badgeBg = Color(module['badgeBg'] as int);
     final Color iconColor = Color(module['iconColor'] as int);
     final Color iconBg = Color(module['iconBg'] as int);
+    final List<String> keyPoints =
+        (module['keyPoints'] as List<dynamic>?)?.cast<String>() ?? [];
 
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 220),
       decoration: BoxDecoration(
-        color: isLocked
-            ? const Color(0xFFFAFAFA)
-            : Colors.white,
+        color: isLocked ? const Color(0xFFFAFAFA) : Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isActive
-              ? const Color(0xFFBAE6FD)
-              : isLocked
-                  ? const Color(0xFFE2E8F0)
-                  : const Color(0xFFE2E8F0),
-          width: isActive ? 1.5 : 1.0,
+          color: isActive || isExpanded
+              ? const Color(0xFF38BDF8)
+              : const Color(0xFFE2E8F0),
+          width: isActive || isExpanded ? 1.5 : 1.0,
         ),
         boxShadow: isLocked
             ? null
@@ -841,14 +1088,13 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
         children: [
           // Header kartu modul
           InkWell(
-            onTap: isLocked ? null : () => _handleModuleAction(module),
+            onTap: () => _toggleExpandModule(module),
             borderRadius: BorderRadius.circular(18),
             child: Padding(
               padding: const EdgeInsets.all(14),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Icon Status
                   Container(
                     width: 40,
                     height: 40,
@@ -865,12 +1111,10 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  // Informasi modul
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Target label & badge baris atas
                         Row(
                           children: [
                             Expanded(
@@ -908,7 +1152,6 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                           ],
                         ),
                         const SizedBox(height: 3),
-                        // Durasi / Status info
                         if (module['duration'] != null)
                           Row(
                             children: [
@@ -916,8 +1159,8 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                                 isActive
                                     ? Icons.play_arrow_rounded
                                     : isDone
-                                        ? Icons.schedule_rounded
-                                        : Icons.timer_outlined,
+                                    ? Icons.check_rounded
+                                    : Icons.timer_outlined,
                                 size: 13,
                                 color: isLocked
                                     ? const Color(0xFFCBD5E1)
@@ -928,9 +1171,10 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                                 child: Text(
                                   isActive
                                       ? '${module['duration']} • Langkah ${module['step']} dari ${module['totalStep']}'
-                                      : isAvailable && module['quizCount'] != null
-                                          ? '${module['duration']} • ${module['quizCount']} Kuis Kilat'
-                                          : module['duration'] as String,
+                                      : isAvailable &&
+                                            module['quizCount'] != null
+                                      ? '${module['duration']} • ${module['quizCount']} Kuis Kilat'
+                                      : module['duration'] as String,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     fontSize: 11,
@@ -943,8 +1187,6 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                               ),
                             ],
                           ),
-
-                        // Deskripsi (bagi modul non-locked)
                         if (!isLocked) ...[
                           const SizedBox(height: 5),
                           Text(
@@ -955,27 +1197,27 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                               color: Color(0xFF475569),
                               height: 1.4,
                             ),
-                            maxLines: 2,
+                            maxLines: isExpanded ? 5 : 2,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
                         if (isLocked) ...[
                           const SizedBox(height: 4),
-                          Row(
-                            children: const [
+                          const Row(
+                            children: [
                               Icon(
                                 Icons.lock_outline_rounded,
                                 size: 12,
-                                color: Color(0xFFCBD5E1),
+                                color: Color(0xFF94A3B8),
                               ),
                               SizedBox(width: 4),
                               Expanded(
                                 child: Text(
-                                  'Buka setelah Target 6.4 selesai',
+                                  'Syarat: Selesaikan Target 6.4 terlebih dahulu',
                                   style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFFCBD5E1),
+                                    color: Color(0xFF94A3B8),
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -986,18 +1228,79 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                       ],
                     ),
                   ),
-                  if (!isLocked)
-                    Icon(
-                      isExpanded
-                          ? Icons.keyboard_arrow_up_rounded
-                          : Icons.keyboard_arrow_right_rounded,
-                      color: const Color(0xFF94A3B8),
-                      size: 20,
-                    ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    isLocked
+                        ? Icons.info_outline_rounded
+                        : isExpanded
+                        ? Icons.keyboard_arrow_up_rounded
+                        : Icons.keyboard_arrow_down_rounded,
+                    color: const Color(0xFF94A3B8),
+                    size: 20,
+                  ),
                 ],
               ),
             ),
           ),
+
+          // Rule 3 & 8: Konten Expandable (Ringkasan Poin Kunci agar tidak membebani ingatan)
+          if (isExpanded && !isLocked && keyPoints.isNotEmpty) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Ringkasan Materi Inti:',
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0F172A),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    ...keyPoints.map(
+                      (pt) => Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              '• ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF0284C7),
+                              ),
+                            ),
+                            Expanded(
+                              child: Text(
+                                pt,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF334155),
+                                  height: 1.35,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+
           // Progress bar untuk modul aktif
           if (isActive) ...[
             Padding(
@@ -1016,11 +1319,12 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
             ),
             const SizedBox(height: 10),
           ],
-          // Tombol aksi modul
+
+          // Tombol aksi modul + Shortcut Selesai Cepat (Rule 2: Universal Usability)
           if (!isLocked && module['action'] != null) ...[
             Padding(
               padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
-              child: _buildModuleActionButton(module),
+              child: _buildModuleActionButton(module, isExpanded),
             ),
           ],
         ],
@@ -1028,59 +1332,89 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
     );
   }
 
-  Widget _buildModuleActionButton(Map<String, dynamic> module) {
+  Widget _buildModuleActionButton(
+    Map<String, dynamic> module,
+    bool isExpanded,
+  ) {
     final String status = module['status'] as String;
     final String label = module['action'] as String;
     final Color btnColor = status == 'done'
         ? const Color(0xFFE0F2FE)
         : status == 'active'
-            ? const Color(0xFF0284C7)
-            : const Color(0xFF0F4C81);
+        ? const Color(0xFF0284C7)
+        : const Color(0xFF0F4C81);
     final Color textColor = status == 'done'
         ? const Color(0xFF0369A1)
         : Colors.white;
 
-    return SizedBox(
-      width: double.infinity,
-      height: 40,
-      child: ElevatedButton.icon(
-        onPressed: () => _handleModuleAction(module),
-        icon: Icon(
-          status == 'done'
-              ? Icons.menu_book_rounded
-              : status == 'active'
-                  ? Icons.play_arrow_rounded
-                  : Icons.rocket_launch_rounded,
-          color: textColor,
-          size: 18,
-        ),
-        label: Text(
-          label,
-          style: TextStyle(
-            color: textColor,
-            fontSize: 13,
-            fontWeight: FontWeight.w800,
+    return Row(
+      children: [
+        Expanded(
+          child: SizedBox(
+            height: 40,
+            child: ElevatedButton.icon(
+              onPressed: () => _advanceModuleStep(module),
+              icon: Icon(
+                status == 'done'
+                    ? Icons.replay_rounded
+                    : status == 'active'
+                    ? Icons.play_arrow_rounded
+                    : Icons.rocket_launch_rounded,
+                color: textColor,
+                size: 18,
+              ),
+              label: Text(
+                label,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: btnColor,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(11),
+                ),
+              ),
+            ),
           ),
         ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: btnColor,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(11),
+        // Rule 2: Shortcut bagi expert user untuk langsung menyelesaikan modul saat di-expand
+        if (status != 'done' && isExpanded) ...[
+          const SizedBox(width: 8),
+          Tooltip(
+            message: 'Pintasan: Tandai seluruh langkah selesai (+25 XP)',
+            child: SizedBox(
+              height: 40,
+              child: OutlinedButton(
+                onPressed: () =>
+                    _advanceModuleStep(module, instantComplete: true),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFF059669),
+                  side: const BorderSide(color: Color(0xFF86EFAC)),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(11),
+                  ),
+                ),
+                child: const Icon(Icons.done_all_rounded, size: 18),
+              ),
+            ),
           ),
-        ),
-      ),
+        ],
+      ],
     );
   }
 
   // ─────────────────────────────────────────────────
-  // 6. Diagram Alir Interaktif
+  // 6. Diagram Alir Interaktif (Rule 3 & 7: Feedback saat kartu diketuk)
   // ─────────────────────────────────────────────────
   Widget _buildFlowDiagramSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header bagian
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -1098,21 +1432,33 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
             ),
             const SizedBox(width: 10),
             const Expanded(
-              child: Text(
-                'Diagram Alir Interaktif: Sanitasi Aman & Siklus Air',
-                style: TextStyle(
-                  fontSize: 14.5,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF0F172A),
-                  letterSpacing: -0.2,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Diagram Alir Interaktif: Siklus Air',
+                    style: TextStyle(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF0F172A),
+                      letterSpacing: -0.2,
+                    ),
+                  ),
+                  Text(
+                    'Ketuk tahap untuk melihat penjelasan proses',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF64748B),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
         const SizedBox(height: 14),
 
-        // Grid 2x2 untuk diagram alir
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -1120,7 +1466,7 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
             crossAxisCount: 2,
             crossAxisSpacing: 10,
             mainAxisSpacing: 10,
-            childAspectRatio: 1.35,
+            childAspectRatio: 1.32,
           ),
           itemCount: _flowSteps.length,
           itemBuilder: (context, index) {
@@ -1129,6 +1475,50 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
             return _buildFlowStepCard(step, isLast, index);
           },
         ),
+
+        // Panel Detail Interaktif saat salah satu tahap diklik
+        if (_selectedFlowIndex != null) ...[
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF0F9FF),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFBAE6FD)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(
+                  Icons.info_rounded,
+                  color: Color(0xFF0284C7),
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Tahap ${_flowSteps[_selectedFlowIndex!]['step']} (${_flowSteps[_selectedFlowIndex!]['title']}): ${_flowSteps[_selectedFlowIndex!]['detail']}',
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF0C4A6E),
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => setState(() => _selectedFlowIndex = null),
+                  child: const Icon(
+                    Icons.close_rounded,
+                    size: 16,
+                    color: Color(0xFF64748B),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
         const SizedBox(height: 14),
 
         // Fakta Kritis UN Water
@@ -1170,8 +1560,7 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                         style: TextStyle(fontWeight: FontWeight.w800),
                       ),
                       TextSpan(
-                        text:
-                            'Lebih dari 80% air limbah global dialirkan kembali ke ekosistem tanpa pengolahan memadai. Ini mencemari sumber air minum bagi ratusan juta orang.',
+                        text: 'Lebih dari 80% air limbah global dialirkan kembali ke ekosistem tanpa pengolahan memadai. Ini mencemari sumber air minum bagi ratusan juta orang.',
                         style: TextStyle(fontWeight: FontWeight.w500),
                       ),
                     ],
@@ -1185,114 +1574,123 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
     );
   }
 
-  Widget _buildFlowStepCard(
-    Map<String, dynamic> step,
-    bool isLast,
-    int index,
-  ) {
+  Widget _buildFlowStepCard(Map<String, dynamic> step, bool isLast, int index) {
     final Color color = Color(step['color'] as int);
     final Color bgColor = Color(step['bgColor'] as int);
+    final bool isSelected = _selectedFlowIndex == index;
 
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: bgColor, width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.06),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: () {
+        setState(() {
+          _selectedFlowIndex = isSelected ? null : index;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isSelected ? bgColor.withValues(alpha: 0.35) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? color : bgColor,
+            width: isSelected ? 1.8 : 1.5,
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: bgColor,
-                  borderRadius: BorderRadius.circular(9),
-                ),
-                child: Center(
-                  child: Icon(
-                    step['icon'] as IconData,
-                    color: color,
-                    size: 17,
-                  ),
-                ),
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 6,
-                  vertical: 2,
-                ),
-                decoration: BoxDecoration(
-                  color: bgColor,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  step['step'] as String,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w900,
-                    color: color,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            step['title'] as String,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF0F172A),
-              height: 1.2,
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-          ),
-          const SizedBox(height: 3),
-          Expanded(
-            child: Text(
-              step['subtitle'] as String,
-              style: const TextStyle(
-                fontSize: 10.5,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF64748B),
-                height: 1.3,
-              ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
-            ),
-          ),
-          if (!isLast) ...[
-            const SizedBox(height: 4),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Icon(
-                  Icons.arrow_forward_rounded,
-                  size: 13,
-                  color: color.withValues(alpha: 0.5),
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: bgColor,
+                    borderRadius: BorderRadius.circular(9),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      step['icon'] as IconData,
+                      color: color,
+                      size: 17,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: bgColor,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    step['step'] as String,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      color: color,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
                 ),
               ],
             ),
+            const SizedBox(height: 8),
+            Text(
+              step['title'] as String,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF0F172A),
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Expanded(
+              child: Text(
+                step['subtitle'] as String,
+                style: const TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF64748B),
+                  height: 1.3,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+            ),
+            if (!isLast) ...[
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 13,
+                    color: color.withValues(alpha: 0.5),
+                  ),
+                ],
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
 
-// ─────────────────────────────────────────────────
-  // 7. Tantangan Kuis Kilat
+  // ─────────────────────────────────────────────────
+  // 7. Tantangan Kuis Kilat (Rule 4, 5, 6: Konfirmasi Submit & Tombol Reset)
   // ─────────────────────────────────────────────────
   Widget _buildQuizSection() {
     final bool isCorrectAnswer =
@@ -1346,37 +1744,26 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
               ),
               const SizedBox(width: 8),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 9,
-                  vertical: 4,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                 decoration: BoxDecoration(
-                  color: !_quizSubmitted
-                      ? const Color(0xFFFFF7ED)
-                      : (isCorrectAnswer
-                          ? const Color(0xFFF0FDF4)
-                          : const Color(0xFFF1F5F9)),
+                  color: _quizRewardClaimed
+                      ? const Color(0xFFF0FDF4)
+                      : const Color(0xFFFFF7ED),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: !_quizSubmitted
-                        ? const Color(0xFFFED7AA)
-                        : (isCorrectAnswer
-                            ? const Color(0xFF86EFAC)
-                            : const Color(0xFFCBD5E1)),
+                    color: _quizRewardClaimed
+                        ? const Color(0xFF86EFAC)
+                        : const Color(0xFFFED7AA),
                   ),
                 ),
                 child: Text(
-                  !_quizSubmitted
-                      ? '+15 XP'
-                      : (isCorrectAnswer ? '+15 XP' : '+0 XP'),
+                  _quizRewardClaimed ? 'Diklaim (+15 XP)' : '+15 XP',
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
-                    color: !_quizSubmitted
-                        ? const Color(0xFFEA580C)
-                        : (isCorrectAnswer
-                            ? const Color(0xFF15803D)
-                            : const Color(0xFF64748B)),
+                    color: _quizRewardClaimed
+                        ? const Color(0xFF15803D)
+                        : const Color(0xFFEA580C),
                   ),
                 ),
               ),
@@ -1414,6 +1801,72 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
               child: _buildQuizOption(index),
             );
           }),
+
+          const SizedBox(height: 12),
+
+          // Rule 5 & 6: Tombol Konfirmasi Jawaban (Mencegah salah tekan) & Tombol Ulangi
+          if (!_quizSubmitted)
+            SizedBox(
+              width: double.infinity,
+              height: 42,
+              child: ElevatedButton(
+                onPressed: _selectedQuizAnswer != null
+                    ? _submitQuizAnswer
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0284C7),
+                  disabledBackgroundColor: const Color(0xFFE2E8F0),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  _selectedQuizAnswer == null
+                      ? 'Pilih Salah Satu Jawaban'
+                      : 'Kirim Jawaban (${_quizOptions[_selectedQuizAnswer!]['label']})',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: _selectedQuizAnswer == null
+                        ? const Color(0xFF94A3B8)
+                        : Colors.white,
+                  ),
+                ),
+              ),
+            )
+          else
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    isCorrectAnswer
+                        ? 'Hebat! Kamu memahami dampak kebocoran mikro.'
+                        : 'Jangan menyerah, kamu bisa mencoba menjawab ulang.',
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w600,
+                      color: isCorrectAnswer
+                          ? const Color(0xFF15803D)
+                          : const Color(0xFF64748B),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                TextButton.icon(
+                  onPressed: _resetQuiz,
+                  icon: const Icon(Icons.refresh_rounded, size: 16),
+                  label: const Text(
+                    'Ulangi Kuis',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                  ),
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color(0xFF0284C7),
+                  ),
+                ),
+              ],
+            ),
         ],
       ),
     );
@@ -1427,7 +1880,6 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
     final bool isCorrect = index == _correctAnswer;
     final bool showResult = _quizSubmitted;
 
-    // Tentukan warna berdasarkan status
     Color borderColor = const Color(0xFFE2E8F0);
     Color bgColor = const Color(0xFFF8FAFC);
     Color labelBg = const Color(0xFFE2E8F0);
@@ -1449,15 +1901,16 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
         textColor = const Color(0xFFDC2626);
       }
     } else if (isSelected) {
-      borderColor = const Color(0xFF93C5FD);
-      bgColor = const Color(0xFFEFF6FF);
-      labelBg = const Color(0xFF3B82F6);
+      borderColor = const Color(0xFF38BDF8);
+      bgColor = const Color(0xFFF0F9FF);
+      labelBg = const Color(0xFF0284C7);
       labelText = Colors.white;
-      textColor = const Color(0xFF1D4ED8);
+      textColor = const Color(0xFF0369A1);
     }
 
-    return GestureDetector(
-      onTap: () => _selectQuizAnswer(index),
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () => _onSelectOption(index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -1468,14 +1921,10 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
         ),
         child: Row(
           children: [
-            // Label A/B/C
             Container(
               width: 28,
               height: 28,
-              decoration: BoxDecoration(
-                color: labelBg,
-                shape: BoxShape.circle,
-              ),
+              decoration: BoxDecoration(color: labelBg, shape: BoxShape.circle),
               child: Center(
                 child: Text(
                   label,
@@ -1500,15 +1949,16 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                       color: textColor,
                     ),
                   ),
-                  // Hint untuk jawaban benar setelah submit
-                  if (showResult && isCorrect && option.containsKey('hint')) ...[
-                    const SizedBox(height: 2),
+                  if (showResult && (isSelected || isCorrect)) ...[
+                    const SizedBox(height: 3),
                     Text(
-                      option['hint'] as String,
-                      style: const TextStyle(
+                      option['feedback'] as String,
+                      style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF15803D),
+                        color: isCorrect
+                            ? const Color(0xFF15803D)
+                            : const Color(0xFFDC2626),
                         height: 1.3,
                       ),
                     ),
@@ -1516,20 +1966,19 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                 ],
               ),
             ),
-            // Ikon hasil
             if (showResult) ...[
               const SizedBox(width: 6),
               Icon(
                 isCorrect
                     ? Icons.check_circle_rounded
                     : isSelected
-                        ? Icons.cancel_rounded
-                        : Icons.radio_button_unchecked_rounded,
+                    ? Icons.cancel_rounded
+                    : Icons.radio_button_unchecked_rounded,
                 color: isCorrect
                     ? const Color(0xFF22C55E)
                     : isSelected
-                        ? const Color(0xFFEF4444)
-                        : const Color(0xFFCBD5E1),
+                    ? const Color(0xFFEF4444)
+                    : const Color(0xFFCBD5E1),
                 size: 18,
               ),
             ],
@@ -1540,7 +1989,7 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
   }
 
   // ─────────────────────────────────────────────────
-  // 8. Kartu Unduh Panduan
+  // 8. Kartu Unduh Panduan (Rule 3 & 4: State Unduhan & Closure)
   // ─────────────────────────────────────────────────
   Widget _buildDownloadGuideCard() {
     return Container(
@@ -1568,22 +2017,28 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE0F2FE),
+                  color: _isDownloaded
+                      ? const Color(0xFFDCFCE7)
+                      : const Color(0xFFE0F2FE),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Center(
+                child: Center(
                   child: Icon(
-                    Icons.picture_as_pdf_rounded,
-                    color: Color(0xFF0284C7),
+                    _isDownloaded
+                        ? Icons.task_alt_rounded
+                        : Icons.picture_as_pdf_rounded,
+                    color: _isDownloaded
+                        ? const Color(0xFF059669)
+                        : const Color(0xFF0284C7),
                     size: 24,
                   ),
                 ),
               ),
               const SizedBox(width: 12),
-              Expanded(
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
                       'Lembar Panduan SDG 6 Kampus',
                       style: TextStyle(
@@ -1607,27 +2062,50 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
               ),
             ],
           ),
+          if (_isDownloading) ...[
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: LinearProgressIndicator(
+                value: _downloadProgress,
+                minHeight: 6,
+                backgroundColor: const Color(0xFFE0F2FE),
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  Color(0xFF0284C7),
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 14),
           SizedBox(
             width: double.infinity,
             height: 46,
             child: ElevatedButton.icon(
-              onPressed: _handleDownload,
-              icon: const Icon(
-                Icons.download_rounded,
+              onPressed: _isDownloading ? null : _handleDownload,
+              icon: Icon(
+                _isDownloaded
+                    ? Icons.folder_open_rounded
+                    : Icons.download_rounded,
                 color: Colors.white,
                 size: 20,
               ),
-              label: const Text(
-                'Simpan Lembar Panduan (PDF Mini)',
-                style: TextStyle(
+              label: Text(
+                _isDownloading
+                    ? 'Mengunduh PDF (${(_downloadProgress * 100).round()}%)...'
+                    : _isDownloaded
+                    ? 'Tersimpan • Buka Lembar Panduan'
+                    : 'Simpan Lembar Panduan (PDF Mini)',
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 13.5,
                   fontWeight: FontWeight.w800,
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0F4C81),
+                backgroundColor: _isDownloaded
+                    ? const Color(0xFF059669)
+                    : const Color(0xFF0F4C81),
+                disabledBackgroundColor: const Color(0xFF94A3B8),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -1649,9 +2127,7 @@ class _EdukasiSdgScreenState extends State<EdukasiSdgScreen> {
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(
-          top: BorderSide(color: Color(0xFFE2E8F0), width: 1.0),
-        ),
+        border: Border(top: BorderSide(color: Color(0xFFE2E8F0), width: 1.0)),
       ),
       child: BottomNavigationBar(
         currentIndex: selectedIndex,
